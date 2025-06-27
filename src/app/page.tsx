@@ -215,8 +215,8 @@ export default function Home() {
         </div>
       
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 px-6">
-          <div className="space-y-8">
+        <div className="flex flex-col lg:flex-row gap-16 px-6">
+          <div className="lg:w-[38%] space-y-8">
             <div className="text-center lg:text-left">
               <h2 className="text-4xl font-bold text-gray-900 mb-6 tracking-tight">
                 Report a Pothole
@@ -227,7 +227,7 @@ export default function Home() {
             </div>
             <ReportForm />
           </div>
-          <div className="space-y-8" id="community-map">
+          <div className="lg:w-[62%] space-y-8" id="community-map">
             <div className="text-center lg:text-left">
               <h2 className="text-4xl font-bold text-gray-900 mb-6 tracking-tight">
                 Live Community Map
