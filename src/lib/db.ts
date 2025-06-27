@@ -7,19 +7,43 @@ const mockReports: PotholeReport[] = [
     id: '1',
     latitude: 37.7749,
     longitude: -122.4194,
-    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5TYW1wbGUgUG90aG9sZTwvdGV4dD48L3N2Zz4=',
-    notes: 'Large pothole on Main Street',
+    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkRlbW8gUG90aG9sZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk5OSI+U2FuIEZyYW5jaXNjbzwvdGV4dD48L3N2Zz4=',
+    notes: 'Large pothole affecting traffic flow',
     status: 'new' as const,
-    confirmations: 0,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+    confirmations: 2,
+    created_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    updated_at: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: '2',
+    latitude: 37.7849,
+    longitude: -122.4094,
+    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkRlbW8gUG90aG9sZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk5OSI+Tm9iIEhpbGw8L3RleHQ+PC9zdmc+',
+    notes: 'Deep pothole near intersection',
+    status: 'confirmed' as const,
+    confirmations: 5,
+    created_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+    updated_at: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: '3',
+    latitude: 37.7649,
+    longitude: -122.4294,
+    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU4Ii8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkZpeGVkIFBvdGhvbGU8L3RleHQ+PHRleHQgeD0iNTAlIiB5PSI2MCUiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM5OTkiPk1pc3Npb24gRGlzdDwvdGV4dD48L3N2Zz4=',
+    notes: 'Small pothole, minor issue',
+    status: 'fixed' as const,
+    confirmations: 3,
+    created_at: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+    updated_at: new Date(Date.now() - 43200000).toISOString(), // 12 hours ago
   }
 ];
 
 // Check if we're in a production environment with real database
 function hasRealDatabase(): boolean {
-  return process.env.NODE_ENV === 'production' || 
-         (!!process.env.POSTGRES_URL && !process.env.POSTGRES_URL.includes('localhost'));
+  return process.env.NODE_ENV === 'production' && 
+         !!process.env.POSTGRES_URL && 
+         !process.env.POSTGRES_URL.includes('localhost') &&
+         process.env.POSTGRES_URL.startsWith('postgres://');
 }
 
 // Database utility functions for the Community Pothole Reporter
