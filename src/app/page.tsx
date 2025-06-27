@@ -87,7 +87,12 @@ export default function Home() {
                   <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10"
+                onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
+              >
                 <MapPin className="mr-3 h-5 w-5" />
                 View Map
               </Button>
@@ -224,7 +229,7 @@ export default function Home() {
               <ReportForm />
             </div>
           </div>
-          <div className="space-y-8">
+          <div className="space-y-8" id="community-map">
             <div className="text-center lg:text-left">
               <h2 className="text-4xl font-bold text-gray-900 mb-6 tracking-tight">
                 Live Community Map
@@ -355,7 +360,12 @@ export default function Home() {
                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold px-12 py-6 rounded-2xl backdrop-blur-sm transition-all duration-300">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold px-12 py-6 rounded-2xl backdrop-blur-sm transition-all duration-300"
+              onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
+            >
               <MapPin className="mr-3 h-6 w-6" />
               Explore the Map
             </Button>
