@@ -87,7 +87,7 @@ export default function Home() {
                   <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="border border-white/20 text-white hover:bg-white/10 font-semibold px-10 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300">
+              <Button variant="outline" size="lg" className="border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10">
                 <MapPin className="mr-3 h-5 w-5" />
                 View Map
               </Button>
