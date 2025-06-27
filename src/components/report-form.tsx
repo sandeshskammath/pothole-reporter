@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -38,6 +38,9 @@ export function ReportForm() {
   const [location, setLocation] = useState<LocationState | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [manualLocation, setManualLocation] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [geocoding, setGeocoding] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
@@ -49,6 +52,41 @@ export function ReportForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
+  // Debounced search for location suggestions
+  const searchLocationSuggestions = useCallback(async (query: string) => {
+    if (!query.trim() || query.length < 3) {
+      setLocationSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`
+      );
+      
+      if (response.ok) {
+        const results = await response.json();
+        setLocationSuggestions(results);
+        setShowSuggestions(true);
+      }
+    } catch (error) {
+      console.error('Error searching locations:', error);
+    } finally {
+      setSearchLoading(false);
+    }
+  }, []);
+
+  // Debounce the search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      searchLocationSuggestions(manualLocation);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [manualLocation, searchLocationSuggestions]);
   
   const getCurrentLocation = () => {
     setLocationLoading(true);
@@ -104,6 +142,26 @@ export function ReportForm() {
     );
   };
 
+  const selectLocationSuggestion = (suggestion: any) => {
+    const latitude = parseFloat(suggestion.lat);
+    const longitude = parseFloat(suggestion.lon);
+    
+    setLocation({
+      latitude,
+      longitude,
+      accuracy: 100
+    });
+    
+    setManualLocation(suggestion.display_name);
+    setShowSuggestions(false);
+    setLocationSuggestions([]);
+    
+    toast({
+      title: "Location selected!",
+      description: `${suggestion.display_name.split(',').slice(0, 2).join(', ')}`,
+    });
+  };
+
   const searchLocation = async () => {
     if (!manualLocation.trim()) {
       toast({
@@ -114,10 +172,15 @@ export function ReportForm() {
       return;
     }
 
+    // If we have suggestions, use the first one
+    if (locationSuggestions.length > 0) {
+      selectLocationSuggestion(locationSuggestions[0]);
+      return;
+    }
+
     setGeocoding(true);
     
     try {
-      // Use Nominatim (OpenStreetMap) geocoding service
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(manualLocation)}&limit=1&addressdetails=1`
       );
@@ -138,20 +201,7 @@ export function ReportForm() {
         return;
       }
       
-      const result = results[0];
-      const latitude = parseFloat(result.lat);
-      const longitude = parseFloat(result.lon);
-      
-      setLocation({
-        latitude,
-        longitude,
-        accuracy: 100 // Approximate accuracy for geocoded addresses
-      });
-      
-      toast({
-        title: "Location found!",
-        description: `${result.display_name.split(',').slice(0, 2).join(', ')}`,
-      });
+      selectLocationSuggestion(results[0]);
       
     } catch (error) {
       toast({
@@ -339,27 +389,62 @@ export function ReportForm() {
                     <div className="flex-1 h-px bg-gray-200"></div>
                   </div>
                   
-                  <div className="flex gap-3">
-                    <Input
-                      placeholder="Enter address or landmark (e.g., 123 Main St, City)"
-                      value={manualLocation}
-                      onChange={(e) => setManualLocation(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && searchLocation()}
-                      className="flex-1 h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-base"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={searchLocation}
-                      disabled={geocoding}
-                      className="h-12 px-4 rounded-2xl border-gray-200 hover:bg-gray-50"
-                    >
-                      {geocoding ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <Search className="h-5 w-5" />
-                      )}
-                    </Button>
+                  <div className="relative">
+                    <div className="flex gap-3">
+                      <div className="relative flex-1">
+                        <Input
+                          placeholder="Enter address or landmark (e.g., 123 Main St, City)"
+                          value={manualLocation}
+                          onChange={(e) => setManualLocation(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && searchLocation()}
+                          onFocus={() => locationSuggestions.length > 0 && setShowSuggestions(true)}
+                          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                          className="flex-1 h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-base pr-8"
+                        />
+                        {searchLoading && (
+                          <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                        )}
+                        
+                        {/* Suggestions Dropdown */}
+                        {showSuggestions && locationSuggestions.length > 0 && (
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 max-h-64 overflow-y-auto">
+                            {locationSuggestions.map((suggestion, index) => (
+                              <button
+                                key={suggestion.place_id || index}
+                                type="button"
+                                onClick={() => selectLocationSuggestion(suggestion)}
+                                className="w-full text-left px-4 py-3 hover:bg-gray-50 first:rounded-t-2xl last:rounded-b-2xl border-b border-gray-100 last:border-b-0 transition-colors"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <MapPin className="h-4 w-4 text-blue-600 mt-1 flex-shrink-0" />
+                                  <div className="min-w-0">
+                                    <div className="font-medium text-gray-900 truncate">
+                                      {suggestion.display_name.split(',')[0]}
+                                    </div>
+                                    <div className="text-sm text-gray-600 truncate">
+                                      {suggestion.display_name.split(',').slice(1).join(',').trim()}
+                                    </div>
+                                  </div>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={searchLocation}
+                        disabled={geocoding || searchLoading}
+                        className="h-12 px-4 rounded-2xl border-gray-200 hover:bg-gray-50"
+                      >
+                        {(geocoding || searchLoading) ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <Search className="h-5 w-5" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
