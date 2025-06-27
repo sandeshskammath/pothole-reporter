@@ -25,7 +25,7 @@ const formSchema = z.object({
   }).refine((file) => !file || file.type.startsWith('image/'), {
     message: "File must be an image",
   }),
-  notes: z.string().max(500).optional(),
+  notes: z.string().max(200).optional(),
 });
 
 interface LocationState {

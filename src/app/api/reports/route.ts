@@ -1,32 +1,82 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { z } from 'zod';
-// Use real database in production, mock for development
-let dbModule: any;
-const isProduction = process.env.NODE_ENV === 'production';
-const hasDatabase = process.env.POSTGRES_URL;
+import DOMPurify from 'isomorphic-dompurify';
 
-if (isProduction && hasDatabase) {
-  try {
-    dbModule = require('@/lib/db');
-    console.log('Using production database');
-  } catch (error) {
-    console.log('Fallback to mock database');
-    dbModule = require('@/lib/mock-db');
-  }
-} else {
-  console.log('Using mock database for development');
-  dbModule = require('@/lib/mock-db');
-}
+// Always use the real database - no fallback to mock
+import { createReport, getAllReports, findNearbyReports } from '@/lib/db';
 
-const { createReport, getAllReports, findNearbyReports } = dbModule;
-
-// Validation schema for creating reports
+// Enhanced validation schema with strict security measures
 const createReportSchema = z.object({
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
-  notes: z.string().max(500).optional(),
+  latitude: z.number()
+    .min(-90, 'Invalid latitude')
+    .max(90, 'Invalid latitude')
+    .finite('Latitude must be a finite number'),
+  longitude: z.number()
+    .min(-180, 'Invalid longitude')
+    .max(180, 'Invalid longitude')
+    .finite('Longitude must be a finite number'),
+  notes: z.string()
+    .max(200, 'Notes must be 200 characters or less') // Reduced from 500
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      // Sanitize input to prevent XSS and injection attacks
+      return DOMPurify.sanitize(val.trim(), { 
+        ALLOWED_TAGS: [], // No HTML tags allowed
+        ALLOWED_ATTR: [] // No attributes allowed
+      });
+    }),
 });
+
+// File validation constants
+const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg', 
+  'image/png',
+  'image/webp'
+];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MIN_FILE_SIZE = 1024; // 1KB minimum
+
+// Validate image file security
+function validateImageFile(file: File): { valid: boolean; error?: string } {
+  // Check file size
+  if (file.size > MAX_FILE_SIZE) {
+    return { valid: false, error: 'File too large. Maximum size is 5MB.' };
+  }
+  
+  if (file.size < MIN_FILE_SIZE) {
+    return { valid: false, error: 'File too small. Minimum size is 1KB.' };
+  }
+  
+  // Check MIME type
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    return { valid: false, error: 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.' };
+  }
+  
+  // Check file extension matches MIME type
+  const extension = file.name.toLowerCase().split('.').pop();
+  const validExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+  
+  if (!extension || !validExtensions.includes(extension)) {
+    return { valid: false, error: 'Invalid file extension.' };
+  }
+  
+  // Ensure MIME type matches extension
+  const mimeExtensionMap: Record<string, string[]> = {
+    'image/jpeg': ['jpg', 'jpeg'],
+    'image/png': ['png'],
+    'image/webp': ['webp']
+  };
+  
+  const allowedExtensions = mimeExtensionMap[file.type];
+  if (!allowedExtensions || !allowedExtensions.includes(extension)) {
+    return { valid: false, error: 'File type does not match extension.' };
+  }
+  
+  return { valid: true };
+}
 
 // GET /api/reports - Fetch all pothole reports
 export async function GET(request: NextRequest) {
@@ -81,22 +131,16 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Validate photo file
-    if (!photo.type.startsWith('image/')) {
+    // Enhanced file validation with security checks
+    const fileValidation = validateImageFile(photo);
+    if (!fileValidation.valid) {
       return NextResponse.json(
-        { success: false, error: 'File must be an image' },
+        { success: false, error: fileValidation.error },
         { status: 400 }
       );
     }
     
-    if (photo.size > 5 * 1024 * 1024) { // 5MB limit
-      return NextResponse.json(
-        { success: false, error: 'Photo must be less than 5MB' },
-        { status: 400 }
-      );
-    }
-    
-    // Validate coordinates
+    // Enhanced data validation with sanitization
     const data = createReportSchema.parse({
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
