@@ -1,6 +1,27 @@
 import { sql } from '@vercel/postgres';
 import { PotholeReport, CreateReportData } from './types';
 
+// Development mock data for when database is not available
+const mockReports: PotholeReport[] = [
+  {
+    id: '1',
+    latitude: 37.7749,
+    longitude: -122.4194,
+    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5TYW1wbGUgUG90aG9sZTwvdGV4dD48L3N2Zz4=',
+    notes: 'Large pothole on Main Street',
+    status: 'new' as const,
+    confirmations: 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }
+];
+
+// Check if we're in a production environment with real database
+function hasRealDatabase(): boolean {
+  return process.env.NODE_ENV === 'production' || 
+         (!!process.env.POSTGRES_URL && !process.env.POSTGRES_URL.includes('localhost'));
+}
+
 // Database utility functions for the Community Pothole Reporter
 
 /**
@@ -45,25 +66,48 @@ export async function initializeDatabase() {
 export async function createReport(data: CreateReportData): Promise<PotholeReport> {
   const { latitude, longitude, photo_url, notes } = data;
   
-  const result = await sql`
-    INSERT INTO pothole_reports (latitude, longitude, photo_url, notes)
-    VALUES (${latitude}, ${longitude}, ${photo_url}, ${notes || null})
-    RETURNING *
-  `;
+  // In production, always use real database
+  if (hasRealDatabase()) {
+    const result = await sql`
+      INSERT INTO pothole_reports (latitude, longitude, photo_url, notes)
+      VALUES (${latitude}, ${longitude}, ${photo_url}, ${notes || null})
+      RETURNING *
+    `;
+    return result.rows[0] as PotholeReport;
+  }
   
-  return result.rows[0] as PotholeReport;
+  // Development fallback - create a mock report
+  const newReport: PotholeReport = {
+    id: `dev-${Date.now()}`,
+    latitude,
+    longitude,
+    photo_url,
+    notes: notes || undefined,
+    status: 'new',
+    confirmations: 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+  
+  mockReports.unshift(newReport);
+  return newReport;
 }
 
 /**
  * Get all pothole reports
  */
 export async function getAllReports(): Promise<PotholeReport[]> {
-  const result = await sql`
-    SELECT * FROM pothole_reports 
-    ORDER BY created_at DESC
-  `;
+  // In production, always use real database
+  if (hasRealDatabase()) {
+    const result = await sql`
+      SELECT * FROM pothole_reports 
+      ORDER BY created_at DESC
+    `;
+    return result.rows as PotholeReport[];
+  }
   
-  return result.rows as PotholeReport[];
+  // Development fallback
+  return [...mockReports];
 }
 
 /**
@@ -87,27 +131,38 @@ export async function findNearbyReports(
   longitude: number,
   radiusMeters: number = 20
 ): Promise<PotholeReport[]> {
-  const result = await sql`
-    SELECT *,
-           (6371000 * acos(
-             cos(radians(${latitude})) * 
-             cos(radians(latitude)) * 
-             cos(radians(longitude) - radians(${longitude})) + 
-             sin(radians(${latitude})) * 
-             sin(radians(latitude))
-           )) as distance_meters
-    FROM pothole_reports
-    WHERE (6371000 * acos(
-      cos(radians(${latitude})) * 
-      cos(radians(latitude)) * 
-      cos(radians(longitude) - radians(${longitude})) + 
-      sin(radians(${latitude})) * 
-      sin(radians(latitude))
-    )) <= ${radiusMeters}
-    ORDER BY distance_meters
-  `;
+  // In production, always use real database
+  if (hasRealDatabase()) {
+    const result = await sql`
+      SELECT *,
+             (6371000 * acos(
+               cos(radians(${latitude})) * 
+               cos(radians(latitude)) * 
+               cos(radians(longitude) - radians(${longitude})) + 
+               sin(radians(${latitude})) * 
+               sin(radians(latitude))
+             )) as distance_meters
+      FROM pothole_reports
+      WHERE (6371000 * acos(
+        cos(radians(${latitude})) * 
+        cos(radians(latitude)) * 
+        cos(radians(longitude) - radians(${longitude})) + 
+        sin(radians(${latitude})) * 
+        sin(radians(latitude))
+      )) <= ${radiusMeters}
+      ORDER BY distance_meters
+    `;
+    return result.rows as PotholeReport[];
+  }
   
-  return result.rows as PotholeReport[];
+  // Development fallback - simple distance calculation
+  return mockReports.filter(report => {
+    const distance = Math.sqrt(
+      Math.pow(report.latitude - latitude, 2) + 
+      Math.pow(report.longitude - longitude, 2)
+    ) * 111000; // Rough conversion to meters
+    return distance <= radiusMeters;
+  });
 }
 
 /**
@@ -153,15 +208,26 @@ export async function confirmReport(id: string): Promise<PotholeReport> {
  * Get report statistics
  */
 export async function getReportStats() {
-  const result = await sql`
-    SELECT 
-      COUNT(*) as total_reports,
-      COUNT(CASE WHEN status = 'new' THEN 1 END) as new_reports,
-      COUNT(CASE WHEN status = 'confirmed' THEN 1 END) as confirmed_reports,
-      COUNT(CASE WHEN status = 'fixed' THEN 1 END) as fixed_reports,
-      COUNT(DISTINCT DATE(created_at)) as active_days
-    FROM pothole_reports
-  `;
+  // In production, always use real database
+  if (hasRealDatabase()) {
+    const result = await sql`
+      SELECT 
+        COUNT(*) as total_reports,
+        COUNT(CASE WHEN status = 'new' THEN 1 END) as new_reports,
+        COUNT(CASE WHEN status = 'confirmed' THEN 1 END) as confirmed_reports,
+        COUNT(CASE WHEN status = 'fixed' THEN 1 END) as fixed_reports,
+        COUNT(DISTINCT DATE(created_at)) as active_days
+      FROM pothole_reports
+    `;
+    return result.rows[0];
+  }
   
-  return result.rows[0];
+  // Development fallback
+  return {
+    total_reports: mockReports.length,
+    new_reports: mockReports.filter(r => r.status === 'new').length,
+    confirmed_reports: mockReports.filter(r => r.status === 'confirmed').length,
+    fixed_reports: mockReports.filter(r => r.status === 'fixed').length,
+    active_days: 1
+  };
 }

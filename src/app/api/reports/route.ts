@@ -3,7 +3,7 @@ import { put } from '@vercel/blob';
 import { z } from 'zod';
 import DOMPurify from 'isomorphic-dompurify';
 
-// Always use the real database - no fallback to mock
+// Import database functions with development fallback
 import { createReport, getAllReports, findNearbyReports } from '@/lib/db';
 
 // Enhanced validation schema with strict security measures
