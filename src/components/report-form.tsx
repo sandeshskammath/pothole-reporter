@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Camera, MapPin, Loader2, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { Camera, MapPin, Loader2, Upload, CheckCircle, AlertCircle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -36,6 +37,8 @@ interface LocationState {
 export function ReportForm() {
   const [location, setLocation] = useState<LocationState | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [manualLocation, setManualLocation] = useState('');
+  const [geocoding, setGeocoding] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,6 +102,66 @@ export function ReportForm() {
         maximumAge: 60000
       }
     );
+  };
+
+  const searchLocation = async () => {
+    if (!manualLocation.trim()) {
+      toast({
+        title: "Address required",
+        description: "Please enter an address to search.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setGeocoding(true);
+    
+    try {
+      // Use Nominatim (OpenStreetMap) geocoding service
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(manualLocation)}&limit=1&addressdetails=1`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Geocoding service unavailable');
+      }
+      
+      const results = await response.json();
+      
+      if (results.length === 0) {
+        toast({
+          title: "Location not found",
+          description: "Please try a more specific address or landmark.",
+          variant: "destructive",
+        });
+        setGeocoding(false);
+        return;
+      }
+      
+      const result = results[0];
+      const latitude = parseFloat(result.lat);
+      const longitude = parseFloat(result.lon);
+      
+      setLocation({
+        latitude,
+        longitude,
+        accuracy: 100 // Approximate accuracy for geocoded addresses
+      });
+      
+      toast({
+        title: "Location found!",
+        description: `${result.display_name.split(',').slice(0, 2).join(', ')}`,
+      });
+      
+    } catch (error) {
+      toast({
+        title: "Search failed",
+        description: "Unable to find location. Please try again or use GPS.",
+        variant: "destructive",
+      });
+    } finally {
+      setGeocoding(false);
+    }
   };
   
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,6 +245,7 @@ export function ReportForm() {
           form.reset();
           setPhotoPreview(null);
           setLocation(null);
+          setManualLocation('');
           setSubmitSuccess(false);
           setUploadProgress(0);
         }, 3000);
@@ -252,17 +316,48 @@ export function ReportForm() {
                   </Alert>
                 )}
                 
-                <Button
-                  type="button"
-                  variant={location ? "outline" : "default"}
-                  onClick={getCurrentLocation}
-                  disabled={locationLoading}
-                  className="w-full"
-                >
-                  {locationLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  <MapPin className="mr-2 h-4 w-4" />
-                  {location ? 'Update Location' : 'Get My Location'}
-                </Button>
+                <div className="grid grid-cols-1 gap-3">
+                  <Button
+                    type="button"
+                    variant={location ? "outline" : "default"}
+                    onClick={getCurrentLocation}
+                    disabled={locationLoading}
+                    className="w-full"
+                  >
+                    {locationLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <MapPin className="mr-2 h-4 w-4" />
+                    {location ? 'Update GPS Location' : 'Use My Location'}
+                  </Button>
+                  
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-px bg-border"></div>
+                    <span className="text-xs text-muted-foreground px-2">OR</span>
+                    <div className="flex-1 h-px bg-border"></div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Enter address or landmark (e.g., 123 Main St, City)"
+                      value={manualLocation}
+                      onChange={(e) => setManualLocation(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && searchLocation()}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={searchLocation}
+                      disabled={geocoding}
+                      className="px-3"
+                    >
+                      {geocoding ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Search className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
               
               {/* Photo Upload Section */}
