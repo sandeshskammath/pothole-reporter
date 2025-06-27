@@ -133,12 +133,12 @@ export default function Home() {
       
         {/* Apple-style Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-6">
-          <Card className="group hover:shadow-xl transition-all duration-500 border-0 shadow-lg hover:scale-[1.02] bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-semibold text-gray-700">
                 New Reports
               </CardTitle>
-              <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-lg">
                 <Camera className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
@@ -153,12 +153,12 @@ export default function Home() {
             </CardContent>
           </Card>
           
-          <Card className="group hover:shadow-xl transition-all duration-500 border-0 shadow-lg hover:scale-[1.02] bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-semibold text-gray-700">
                 In Progress
               </CardTitle>
-              <div className="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg">
                 <Wrench className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
@@ -173,12 +173,12 @@ export default function Home() {
             </CardContent>
           </Card>
           
-          <Card className="group hover:shadow-xl transition-all duration-500 border-0 shadow-lg hover:scale-[1.02] bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-semibold text-gray-700">
                 Fixed Potholes
               </CardTitle>
-              <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg">
                 <CheckCircle className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
@@ -193,12 +193,12 @@ export default function Home() {
             </CardContent>
           </Card>
           
-          <Card className="group hover:shadow-xl transition-all duration-500 border-0 shadow-lg hover:scale-[1.02] bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-semibold text-gray-700">
                 Active Members
               </CardTitle>
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
                 <Users className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
@@ -225,9 +225,7 @@ export default function Home() {
                 Help improve road safety in your community. It takes less than 2 minutes to make a difference.
               </p>
             </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-gray-200/50">
-              <ReportForm />
-            </div>
+            <ReportForm />
           </div>
           <div className="space-y-8" id="community-map">
             <div className="text-center lg:text-left">
@@ -238,9 +236,7 @@ export default function Home() {
                 See real-time reports from your community and track the progress of road repairs.
               </p>
             </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-gray-200/50">
-              <PotholeMap />
-            </div>
+            <PotholeMap />
           </div>
         </div>
       

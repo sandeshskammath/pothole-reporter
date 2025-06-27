@@ -265,7 +265,7 @@ export function ReportForm() {
   };
   
   return (
-    <Card className="w-full max-w-lg mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
+    <Card className="w-full mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
       <CardHeader className="pb-6">
         <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-900 tracking-tight">
           <div className="p-2 bg-blue-100 rounded-2xl">
