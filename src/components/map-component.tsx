@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -105,74 +104,49 @@ export default function MapComponent({ reports }: MapComponentProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        <MarkerClusterGroup
-          chunkedLoading
-          iconCreateFunction={(cluster: any) => {
-            const count = cluster.getChildCount();
-            return L.divIcon({
-              html: `<div style="
-                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-                color: white;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 14px;
-                border: 3px solid white;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-              ">${count}</div>`,
-              className: 'custom-cluster-icon',
-              iconSize: [40, 40],
-            });
-          }}
-        >
-          {reports.map((report) => (
-            <Marker
-              key={report.id}
-              position={[report.latitude, report.longitude]}
-              icon={createCustomIcon(report.status)}
-            >
-              <Popup>
-                <div className="min-w-[200px]">
-                  <div className="space-y-2">
-                    <img 
-                      src={report.photo_url} 
-                      alt="Pothole" 
-                      className="w-full h-32 object-cover rounded"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/placeholder-image.svg';
-                      }}
-                    />
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-medium">Status:</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          report.status === 'reported' ? 'bg-red-100 text-red-800' :
-                          report.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
-                          {report.status.replace('_', ' ')}
-                        </span>
-                      </div>
-                      {report.notes && (
-                        <p className="text-sm text-gray-600 mb-2">{report.notes}</p>
-                      )}
-                      <p className="text-xs text-gray-500">
-                        Reported: {new Date(report.created_at).toLocaleDateString()}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Location: {report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}
-                      </p>
+{reports.map((report) => (
+          <Marker
+            key={report.id}
+            position={[report.latitude, report.longitude]}
+            icon={createCustomIcon(report.status)}
+          >
+            <Popup>
+              <div className="min-w-[200px]">
+                <div className="space-y-2">
+                  <img 
+                    src={report.photo_url} 
+                    alt="Pothole" 
+                    className="w-full h-32 object-cover rounded"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/placeholder-image.svg';
+                    }}
+                  />
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-medium">Status:</span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        report.status === 'reported' ? 'bg-red-100 text-red-800' :
+                        report.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {report.status.replace('_', ' ')}
+                      </span>
                     </div>
+                    {report.notes && (
+                      <p className="text-sm text-gray-600 mb-2">{report.notes}</p>
+                    )}
+                    <p className="text-xs text-gray-500">
+                      Reported: {new Date(report.created_at).toLocaleDateString()}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Location: {report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}
+                    </p>
                   </div>
                 </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MarkerClusterGroup>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
         
         <MapUpdater reports={reports} />
       </MapContainer>
