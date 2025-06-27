@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
       }, { status: 409 });
     }
     
-    // Upload photo to Vercel Blob (or use placeholder for development)
+    // Upload photo to Vercel Blob (or convert to data URL for development)
     let photoUrl: string;
     
     try {
@@ -130,10 +130,13 @@ export async function POST(request: NextRequest) {
       });
       
       photoUrl = blob.url;
+      console.log('Photo uploaded to Vercel Blob successfully');
     } catch (error) {
-      console.log('Using placeholder image for development');
-      // Use a placeholder image for development
-      photoUrl = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop';
+      console.log('Blob upload failed, converting to data URL for development');
+      // Convert the uploaded file to a data URL for development
+      const buffer = await photo.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString('base64');
+      photoUrl = `data:${photo.type};base64,${base64}`;
     }
     
     // Create report in database
