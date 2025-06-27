@@ -76,13 +76,13 @@ export default function Home() {
             
             <div className="animate-fade-in-up animation-delay-200 flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/report">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group">
+                <Button size="lg" className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 font-bold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group border-2 border-yellow-500">
                   <Camera className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                   Report a Pothole
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-4 rounded-full">
+              <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 rounded-full transition-all duration-300">
                 <MapPin className="mr-2 h-5 w-5" />
                 View Map
               </Button>
@@ -323,49 +323,31 @@ export default function Home() {
           </div>
         </div>
       
-        {/* Development Status */}
-        <Card className="border-green-200 bg-gradient-to-br from-green-50 to-blue-50">
-          <CardHeader>
-            <CardTitle className="text-green-800 flex items-center gap-2">
-              <CheckCircle className="h-6 w-6" />
-              🎉 Development Complete
-            </CardTitle>
-            <CardDescription className="text-green-700">
-              Professional-grade community pothole reporting system
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-green-700">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div className="space-y-2">
-                <p>✅ Next.js 14 with TypeScript</p>
-                <p>✅ Professional UI with shadcn/ui</p>
-                <p>✅ Real-time interactive map</p>
-                <p>✅ Mobile-responsive design</p>
-                <p>✅ Photo upload & validation</p>
-              </div>
-              <div className="space-y-2">
-                <p>✅ Geolocation integration</p>
-                <p>✅ Live statistics dashboard</p>
-                <p>✅ Community impact tracking</p>
-                <p>✅ Smooth animations & micro-interactions</p>
-                <p>✅ Production-ready architecture</p>
-              </div>
-            </div>
-            
-            <div className="flex gap-4 mt-6">
-              <Link href="/test">
-                <Button variant="outline" className="border-green-600 text-green-700 hover:bg-green-100">
-                  🧪 Test APIs
-                </Button>
-              </Link>
-              <Link href="/report">
-                <Button className="bg-green-600 hover:bg-green-700 text-white">
-                  Try Live Demo
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Call to Action */}
+        <div className="text-center space-y-8 py-16">
+          <div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Ready to Make a Difference?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+              Join our community of citizens working together to improve road safety. Every report helps make our streets safer for everyone.
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/report">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group">
+                <Camera className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                Report Your First Pothole
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Button variant="outline" size="lg" className="border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold px-8 py-4 rounded-full">
+              <MapPin className="mr-2 h-5 w-5" />
+              Explore the Map
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

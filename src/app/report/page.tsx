@@ -15,24 +15,37 @@ export default function ReportPage() {
       
       <ReportForm />
       
-      <Card className="mt-8 border-amber-200 bg-amber-50">
+      <Card className="mt-8 border-blue-200 bg-blue-50">
         <CardHeader>
-          <CardTitle className="text-amber-800">📋 Testing Instructions</CardTitle>
-          <CardDescription className="text-amber-700">
-            How to test the report form functionality
+          <CardTitle className="text-blue-800">💡 How to Report</CardTitle>
+          <CardDescription className="text-blue-700">
+            Quick guide to reporting a pothole
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-amber-700">
-          <ol className="list-decimal list-inside space-y-2">
-            <li>Click "Get My Location" and allow location access</li>
-            <li>Click "Take Photo" and select an image file</li>
-            <li>Add optional notes about the pothole</li>
-            <li>Click "Report Pothole" to submit</li>
-            <li>Watch for success message and form reset</li>
-          </ol>
-          <p className="mt-4 text-sm">
-            <strong>Note:</strong> The form requires both location and photo before submission is enabled.
-          </p>
+        <CardContent className="text-blue-700">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-2xl">📍</span>
+              </div>
+              <h3 className="font-semibold">Allow Location</h3>
+              <p className="text-sm">Enable GPS for accurate reporting</p>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-2xl">📸</span>
+              </div>
+              <h3 className="font-semibold">Take Photo</h3>
+              <p className="text-sm">Capture a clear image of the damage</p>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-2xl">📝</span>
+              </div>
+              <h3 className="font-semibold">Submit Report</h3>
+              <p className="text-sm">Help improve road safety in your area</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
