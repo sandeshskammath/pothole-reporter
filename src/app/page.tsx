@@ -131,6 +131,32 @@ export default function Home() {
 
       <div className="container mx-auto py-20 space-y-20">
       
+        {/* Main Content */}
+        <div className="flex flex-col lg:flex-row gap-16 px-6">
+          <div className="lg:w-[38%] space-y-8">
+            <div className="text-center lg:text-left">
+              <h2 className="text-4xl font-bold text-gray-900 mb-6 tracking-tight">
+                Report a Pothole
+              </h2>
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed font-light">
+                Help improve road safety in your community. It takes less than 2 minutes to make a difference.
+              </p>
+            </div>
+            <ReportForm />
+          </div>
+          <div className="lg:w-[62%] space-y-8" id="community-map">
+            <div className="text-center lg:text-left">
+              <h2 className="text-4xl font-bold text-gray-900 mb-6 tracking-tight">
+                Live Community Map
+              </h2>
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed font-light">
+                See real-time reports from your community and track the progress of road repairs.
+              </p>
+            </div>
+            <PotholeMap />
+          </div>
+        </div>
+      
         {/* Apple-style Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-6">
           <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
@@ -212,32 +238,6 @@ export default function Home() {
               </p>
             </CardContent>
           </Card>
-        </div>
-      
-        {/* Main Content */}
-        <div className="flex flex-col lg:flex-row gap-16 px-6">
-          <div className="lg:w-[38%] space-y-8">
-            <div className="text-center lg:text-left">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6 tracking-tight">
-                Report a Pothole
-              </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed font-light">
-                Help improve road safety in your community. It takes less than 2 minutes to make a difference.
-              </p>
-            </div>
-            <ReportForm />
-          </div>
-          <div className="lg:w-[62%] space-y-8" id="community-map">
-            <div className="text-center lg:text-left">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6 tracking-tight">
-                Live Community Map
-              </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed font-light">
-                See real-time reports from your community and track the progress of road repairs.
-              </p>
-            </div>
-            <PotholeMap />
-          </div>
         </div>
       
         {/* How it Works */}
