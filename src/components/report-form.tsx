@@ -265,95 +265,99 @@ export function ReportForm() {
   };
   
   return (
-    <Card className="w-full max-w-lg mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Camera className="h-5 w-5 text-primary" />
+    <Card className="w-full max-w-lg mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
+      <CardHeader className="pb-6">
+        <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-900 tracking-tight">
+          <div className="p-2 bg-blue-100 rounded-2xl">
+            <Camera className="h-6 w-6 text-blue-600" />
+          </div>
           Report a Pothole
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-lg text-gray-600 font-light">
           Help make our roads safer by reporting road damage
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-6 pb-6">
         {submitSuccess ? (
-          <div className="text-center space-y-4 py-8">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
-            <div>
-              <h3 className="text-lg font-semibold text-green-700">Report Submitted!</h3>
-              <p className="text-muted-foreground">Thank you for helping improve road safety.</p>
+          <div className="text-center space-y-6 py-12">
+            <div className="w-20 h-20 bg-green-100 rounded-3xl flex items-center justify-center mx-auto">
+              <CheckCircle className="h-12 w-12 text-green-600" />
             </div>
-            <Progress value={100} className="w-full" />
+            <div>
+              <h3 className="text-2xl font-bold text-green-700 mb-2">Report Submitted!</h3>
+              <p className="text-gray-600 font-light">Thank you for helping improve road safety.</p>
+            </div>
+            <Progress value={100} className="w-full h-2 rounded-full" />
           </div>
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Location Section */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Location</label>
+                  <label className="text-lg font-semibold text-gray-900">Location</label>
                   {location && (
-                    <Badge variant="outline" className="text-xs">
-                      <MapPin className="h-3 w-3 mr-1" />
+                    <Badge className="bg-green-100 text-green-700 border-0 px-3 py-1 rounded-full text-sm font-medium">
+                      <MapPin className="h-4 w-4 mr-2" />
                       Accuracy: {location.accuracy ? Math.round(location.accuracy) : 'Unknown'}m
                     </Badge>
                   )}
                 </div>
                 
                 {location ? (
-                  <Alert>
-                    <CheckCircle className="h-4 w-4" />
-                    <AlertDescription>
+                  <Alert className="bg-green-50 border-green-200 rounded-2xl p-4">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <AlertDescription className="text-green-700 font-medium ml-2">
                       Location detected: {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
                     </AlertDescription>
                   </Alert>
                 ) : (
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
+                  <Alert className="bg-orange-50 border-orange-200 rounded-2xl p-4">
+                    <AlertCircle className="h-5 w-5 text-orange-600" />
+                    <AlertDescription className="text-orange-700 font-medium ml-2">
                       Location access required to report potholes accurately.
                     </AlertDescription>
                   </Alert>
                 )}
                 
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-1 gap-4">
                   <Button
                     type="button"
                     variant={location ? "outline" : "default"}
                     onClick={getCurrentLocation}
                     disabled={locationLoading}
-                    className="w-full"
+                    className="w-full h-12 rounded-2xl font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    {locationLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    <MapPin className="mr-2 h-4 w-4" />
+                    {locationLoading && <Loader2 className="mr-3 h-5 w-5 animate-spin" />}
+                    <MapPin className="mr-3 h-5 w-5" />
                     {location ? 'Update GPS Location' : 'Use My Location'}
                   </Button>
                   
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-px bg-border"></div>
-                    <span className="text-xs text-muted-foreground px-2">OR</span>
-                    <div className="flex-1 h-px bg-border"></div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-gray-200"></div>
+                    <span className="text-sm text-gray-500 px-3 font-medium">OR</span>
+                    <div className="flex-1 h-px bg-gray-200"></div>
                   </div>
                   
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <Input
                       placeholder="Enter address or landmark (e.g., 123 Main St, City)"
                       value={manualLocation}
                       onChange={(e) => setManualLocation(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && searchLocation()}
-                      className="flex-1"
+                      className="flex-1 h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-base"
                     />
                     <Button
                       type="button"
                       variant="outline"
                       onClick={searchLocation}
                       disabled={geocoding}
-                      className="px-3"
+                      className="h-12 px-4 rounded-2xl border-gray-200 hover:bg-gray-50"
                     >
                       {geocoding ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-5 w-5 animate-spin" />
                       ) : (
-                        <Search className="h-4 w-4" />
+                        <Search className="h-5 w-5" />
                       )}
                     </Button>
                   </div>
@@ -366,17 +370,17 @@ export function ReportForm() {
                 name="photo"
                 render={({ field: { onChange, value, ...field } }) => (
                   <FormItem>
-                    <FormLabel>Photo</FormLabel>
+                    <FormLabel className="text-lg font-semibold text-gray-900">Photo</FormLabel>
                     <FormControl>
-                      <div className="space-y-4">
-                        <div className="flex gap-2">
+                      <div className="space-y-6">
+                        <div className="flex gap-3">
                           <Button
                             type="button"
                             variant="outline"
                             onClick={() => document.getElementById('photo-input')?.click()}
-                            className="flex-1"
+                            className="flex-1 h-12 rounded-2xl border-gray-200 hover:bg-gray-50 font-semibold"
                           >
-                            <Camera className="h-4 w-4 mr-2" />
+                            <Camera className="h-5 w-5 mr-3" />
                             {value ? 'Change Photo' : 'Take Photo'}
                           </Button>
                           {photoPreview && (
@@ -385,8 +389,9 @@ export function ReportForm() {
                               variant="outline"
                               size="icon"
                               onClick={() => setPhotoDialogOpen(true)}
+                              className="h-12 w-12 rounded-2xl border-gray-200 hover:bg-gray-50"
                             >
-                              <Upload className="h-4 w-4" />
+                              <Upload className="h-5 w-5" />
                             </Button>
                           )}
                         </div>
@@ -404,17 +409,17 @@ export function ReportForm() {
                             <img 
                               src={photoPreview} 
                               alt="Pothole preview" 
-                              className="w-full h-48 object-cover rounded-lg border cursor-pointer"
+                              className="w-full h-52 object-cover rounded-3xl border-2 border-gray-200 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300"
                               onClick={() => setPhotoDialogOpen(true)}
                             />
-                            <Badge className="absolute top-2 right-2 bg-black/50 text-white">
+                            <Badge className="absolute top-4 right-4 bg-black/70 text-white border-0 px-3 py-1 rounded-full backdrop-blur-sm">
                               Click to view
                             </Badge>
                           </div>
                         )}
                       </div>
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-base text-gray-600 font-light">
                       Take or upload a clear photo of the pothole. Max 5MB.
                     </FormDescription>
                     <FormMessage />
@@ -428,16 +433,16 @@ export function ReportForm() {
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Additional Notes (Optional)</FormLabel>
+                    <FormLabel className="text-lg font-semibold text-gray-900">Additional Notes (Optional)</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Very deep, near the school entrance, affects bike lane..."
-                        className="resize-none"
-                        rows={3}
+                        className="resize-none rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-base"
+                        rows={4}
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-base text-gray-600 font-light">
                       Any details that might help locate or assess the pothole (max 500 characters)
                     </FormDescription>
                     <FormMessage />
@@ -447,28 +452,28 @@ export function ReportForm() {
               
               {/* Upload Progress */}
               {isSubmitting && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Uploading report...</span>
-                    <span>{Math.round(uploadProgress)}%</span>
+                <div className="space-y-3 bg-blue-50 rounded-2xl p-4">
+                  <div className="flex justify-between text-base font-medium">
+                    <span className="text-blue-700">Uploading report...</span>
+                    <span className="text-blue-600">{Math.round(uploadProgress)}%</span>
                   </div>
-                  <Progress value={uploadProgress} className="w-full" />
+                  <Progress value={uploadProgress} className="w-full h-2 rounded-full" />
                 </div>
               )}
               
               {/* Submit Button */}
               <Button 
                 type="submit" 
-                className="w-full" 
+                className="w-full h-14 rounded-2xl text-lg font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300" 
                 disabled={isSubmitting || !location || !form.watch('photo')}
                 size="lg"
               >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && <Loader2 className="mr-3 h-6 w-6 animate-spin" />}
                 {isSubmitting ? 'Reporting Pothole...' : 'Report Pothole'}
               </Button>
               
               {(!location || !form.watch('photo')) && (
-                <p className="text-xs text-muted-foreground text-center">
+                <p className="text-base text-gray-500 text-center font-light">
                   {!location && !form.watch('photo') ? 'Photo and location required' :
                    !location ? 'Location required' : 'Photo required'}
                 </p>
