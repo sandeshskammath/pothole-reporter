@@ -28,7 +28,7 @@ interface PotholeReport {
   photo_url: string;
   notes?: string;
   created_at: string;
-  status: 'reported' | 'in_progress' | 'fixed';
+  status: 'new' | 'confirmed' | 'fixed';
 }
 
 export function PotholeMap() {
@@ -69,6 +69,23 @@ export function PotholeMap() {
 
   useEffect(() => {
     fetchReports();
+    
+    // Set up auto-refresh every 30 seconds to catch new reports
+    const interval = setInterval(() => {
+      fetchReports(false); // Silent refresh
+    }, 30000);
+    
+    // Listen for new pothole reports and refresh immediately
+    const handlePotholeReported = () => {
+      fetchReports(false); // Silent refresh when new report is submitted
+    };
+    
+    window.addEventListener('potholeReported', handlePotholeReported);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('potholeReported', handlePotholeReported);
+    };
   }, []);
 
   return (

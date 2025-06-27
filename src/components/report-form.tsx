@@ -290,6 +290,11 @@ export function ReportForm() {
           description: "Pothole reported successfully. Thank you for helping make our roads safer!",
         });
         
+        // Trigger map refresh by dispatching a custom event
+        window.dispatchEvent(new CustomEvent('potholeReported', { 
+          detail: result.report 
+        }));
+        
         // Reset form after success
         setTimeout(() => {
           form.reset();

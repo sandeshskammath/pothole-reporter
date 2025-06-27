@@ -9,7 +9,7 @@ interface PotholeReport {
   photo_url: string;
   notes?: string;
   created_at: string;
-  status: 'reported' | 'in_progress' | 'fixed';
+  status: 'new' | 'confirmed' | 'fixed';
 }
 
 interface SimpleMapProps {
@@ -47,12 +47,12 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
         // Create custom icons
         const createCustomIcon = (status: string) => {
           const colors = {
-            reported: '#ef4444',
-            in_progress: '#eab308', 
+            new: '#ef4444',
+            confirmed: '#eab308', 
             fixed: '#22c55e',
           };
           
-          const color = colors[status as keyof typeof colors] || colors.reported;
+          const color = colors[status as keyof typeof colors] || colors.new;
           
           return L.divIcon({
             html: `
@@ -134,8 +134,8 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                     border-radius: 16px; 
                     font-size: 12px; 
                     font-weight: 600;
-                    ${report.status === 'reported' ? 'background-color: #fef2f2; color: #dc2626;' :
-                      report.status === 'in_progress' ? 'background-color: #fefce8; color: #ca8a04;' :
+                    ${report.status === 'new' ? 'background-color: #fef2f2; color: #dc2626;' :
+                      report.status === 'confirmed' ? 'background-color: #fefce8; color: #ca8a04;' :
                       'background-color: #f0fdf4; color: #16a34a;'}
                   ">
                     ${report.status.replace('_', ' ')}
