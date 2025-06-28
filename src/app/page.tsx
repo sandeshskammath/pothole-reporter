@@ -90,29 +90,27 @@ export default function Home() {
               </p>
             </div>
             
-            <div className="animate-fade-in-up animation-delay-200 flex flex-col sm:flex-row gap-8 justify-center items-center">
-              {/* Orb with CTA Inside */}
-              <div className="relative w-80 h-80 flex items-center justify-center">
+            <div className="animate-fade-in-up animation-delay-200 flex justify-center">
+              {/* Centered Orb with CTA Inside */}
+              <div className="relative w-96 h-96 flex items-center justify-center">
                 <Orb
                   hue={240}
                   hoverIntensity={0.4}
                   rotateOnHover={true}
                   forceHoverState={false}
                 />
-                {/* CTA overlaid on the orb */}
-                <Link href="/report" className="absolute inset-0 flex items-center justify-center z-10">
-                  <div className="bg-black/80 backdrop-blur-sm px-8 py-4 rounded-2xl border border-white/30 hover:bg-black/90 transition-all duration-300 shadow-2xl">
-                    <div className="flex items-center text-white font-semibold text-lg">
-                      <Camera className="mr-3 h-6 w-6" />
-                      Report a Pothole
-                      <ArrowRight className="ml-3 h-6 w-6" />
-                    </div>
+                {/* CTA overlaid on the orb - clean text with cursor */}
+                <Link href="/report" className="absolute inset-0 flex items-center justify-center z-10 cursor-pointer group">
+                  <div className="flex items-center text-white font-semibold text-xl transition-all duration-300 group-hover:scale-105">
+                    <Camera className="mr-3 h-6 w-6 group-hover:text-blue-300 transition-colors" />
+                    <span className="group-hover:text-blue-100 transition-colors">Report a Pothole</span>
+                    <ArrowRight className="ml-3 h-6 w-6 group-hover:text-blue-300 transition-colors group-hover:translate-x-1" />
                   </div>
                 </Link>
               </div>
               
-              {/* View Map Button */}
-              <Button 
+              {/* View Map Button - Commented out for now */}
+              {/* <Button 
                 variant="outline" 
                 size="lg" 
                 className="border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-8 py-4 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10 h-[54px] flex items-center justify-center text-base"
@@ -120,7 +118,7 @@ export default function Home() {
               >
                 <MapPin className="mr-3 h-5 w-5" />
                 View Map
-              </Button>
+              </Button> */}
             </div>
             
             {/* Impact Stats */}
