@@ -287,7 +287,7 @@ export default function Home() {
           <div className="relative max-w-4xl mx-auto space-y-12">
             <div>
               <h2 className="text-5xl font-bold mb-6 tracking-tight">
-                Together, We're Making a Difference
+                Together, We&apos;re Making a Difference
               </h2>
               <p className="text-2xl text-gray-300 leading-relaxed font-light">
                 Join thousands of community members who are actively improving road safety. Every report matters, every fix counts, and every voice makes our streets safer for everyone.
