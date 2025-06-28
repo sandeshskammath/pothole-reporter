@@ -21,6 +21,9 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
   const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
+    console.log('🗺️ SimpleMap: Received reports:', reports?.length || 0);
+    console.log('🗺️ SimpleMap: Reports data:', reports);
+    
     if (typeof window === 'undefined' || !mapRef.current) return;
 
     // Dynamically import Leaflet to avoid SSR issues
@@ -109,8 +112,10 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
         };
 
         // Add markers
+        console.log('🗺️ SimpleMap: Creating markers for', reports.length, 'reports');
         const markers: any[] = [];
         for (const report of reports) {
+          console.log('🗺️ SimpleMap: Creating marker for report:', report.id, 'at', report.latitude, report.longitude);
           const marker = L.marker([report.latitude, report.longitude], {
             icon: createCustomIcon(report.status)
           });
@@ -170,17 +175,26 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
 
           marker.addTo(map);
           markers.push(marker);
+          console.log('🗺️ SimpleMap: Added marker for report:', report.id);
         }
+        
+        console.log('🗺️ SimpleMap: Total markers created and added:', markers.length);
 
         // Fit bounds if we have markers
         if (markers.length > 0) {
+          console.log('🗺️ SimpleMap: Fitting bounds for', markers.length, 'markers');
           const group = new L.FeatureGroup(markers);
-          map.fitBounds(group.getBounds().pad(0.1));
+          const bounds = group.getBounds();
+          console.log('🗺️ SimpleMap: Bounds:', bounds);
+          map.fitBounds(bounds.pad(0.1));
+        } else {
+          console.log('🗺️ SimpleMap: No markers to fit bounds for');
         }
 
         mapInstanceRef.current = map;
+        console.log('🗺️ SimpleMap: Map initialization complete');
       } catch (error) {
-        console.error('Error initializing map:', error);
+        console.error('🗺️ SimpleMap: Error initializing map:', error);
       }
     };
 
