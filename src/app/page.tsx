@@ -9,6 +9,7 @@ import { ReportForm } from '@/components/report-form';
 import { PotholeMap } from '@/components/pothole-map';
 import GradientText from '@/components/ui/GradientText';
 import StarBorder from '@/components/ui/StarBorder';
+import Orb from '@/components/ui/Orb';
 import Link from 'next/link';
 
 interface Stats {
@@ -89,25 +90,32 @@ export default function Home() {
               </p>
             </div>
             
-            <div className="animate-fade-in-up animation-delay-200 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/report">
-                <StarBorder 
-                  as="div"
-                  color="#f59e0b" 
-                  speed="5s"
-                  className="rounded-2xl"
-                >
-                  <div className="flex items-center">
-                    <Camera className="mr-3 h-5 w-5" />
-                    Report a Pothole
-                    <ArrowRight className="ml-3 h-5 w-5" />
+            <div className="animate-fade-in-up animation-delay-200 flex flex-col sm:flex-row gap-8 justify-center items-center">
+              {/* Orb with CTA Inside */}
+              <div className="relative w-80 h-80 flex items-center justify-center">
+                <Orb
+                  hue={240}
+                  hoverIntensity={0.4}
+                  rotateOnHover={true}
+                  forceHoverState={false}
+                />
+                {/* CTA overlaid on the orb */}
+                <Link href="/report" className="absolute inset-0 flex items-center justify-center z-10">
+                  <div className="bg-black/80 backdrop-blur-sm px-8 py-4 rounded-2xl border border-white/30 hover:bg-black/90 transition-all duration-300 shadow-2xl">
+                    <div className="flex items-center text-white font-semibold text-lg">
+                      <Camera className="mr-3 h-6 w-6" />
+                      Report a Pothole
+                      <ArrowRight className="ml-3 h-6 w-6" />
+                    </div>
                   </div>
-                </StarBorder>
-              </Link>
+                </Link>
+              </div>
+              
+              {/* View Map Button */}
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="w-full sm:w-[200px] border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-6 py-4 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10 h-[54px] flex items-center justify-center text-base"
+                className="border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-8 py-4 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10 h-[54px] flex items-center justify-center text-base"
                 onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <MapPin className="mr-3 h-5 w-5" />
