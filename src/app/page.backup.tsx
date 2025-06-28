@@ -52,7 +52,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Apple-inspired Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
         {/* Glass morphism background */}
@@ -131,8 +131,6 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto py-20 space-y-20">
-        {/* Subtle glass overlay for content sections */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent pointer-events-none"></div>
       
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row gap-16 px-6">
@@ -144,82 +142,82 @@ export default function Home() {
           </div>
         </div>
       
-        {/* Apple-style Dark Glass Stats Cards */}
-        <div className="relative grid grid-cols-1 md:grid-cols-4 gap-6 px-6">
-          <Card className="border border-white/10 shadow-2xl bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden hover:bg-white/15 transition-all duration-300">
+        {/* Apple-style Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-6">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-semibold text-white/90">
+              <CardTitle className="text-sm font-semibold text-gray-700">
                 New Reports
               </CardTitle>
-              <div className="p-3 bg-gradient-to-br from-red-500/80 to-red-600/80 rounded-2xl shadow-lg backdrop-blur-sm">
+              <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-lg">
                 <Camera className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold text-white mb-2">
+              <div className="text-4xl font-bold text-gray-900 mb-2">
                 {loading ? '...' : stats.reportedCount}
               </div>
-              <p className="text-sm text-red-400 font-medium flex items-center">
+              <p className="text-sm text-red-600 font-medium flex items-center">
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Awaiting review
               </p>
             </CardContent>
           </Card>
           
-          <Card className="border border-white/10 shadow-2xl bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden hover:bg-white/15 transition-all duration-300">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-semibold text-white/90">
+              <CardTitle className="text-sm font-semibold text-gray-700">
                 In Progress
               </CardTitle>
-              <div className="p-3 bg-gradient-to-br from-orange-500/80 to-orange-600/80 rounded-2xl shadow-lg backdrop-blur-sm">
+              <div className="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg">
                 <Wrench className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold text-white mb-2">
+              <div className="text-4xl font-bold text-gray-900 mb-2">
                 {loading ? '...' : stats.inProgressCount}
               </div>
-              <p className="text-sm text-orange-400 font-medium flex items-center">
+              <p className="text-sm text-orange-600 font-medium flex items-center">
                 <Clock className="h-4 w-4 mr-2" />
                 Being repaired
               </p>
             </CardContent>
           </Card>
           
-          <Card className="border border-white/10 shadow-2xl bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden hover:bg-white/15 transition-all duration-300">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-semibold text-white/90">
+              <CardTitle className="text-sm font-semibold text-gray-700">
                 Fixed Potholes
               </CardTitle>
-              <div className="p-3 bg-gradient-to-br from-green-500/80 to-green-600/80 rounded-2xl shadow-lg backdrop-blur-sm">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg">
                 <CheckCircle className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold text-white mb-2">
+              <div className="text-4xl font-bold text-gray-900 mb-2">
                 {loading ? '...' : stats.fixedCount}
               </div>
-              <p className="text-sm text-green-400 font-medium flex items-center">
+              <p className="text-sm text-green-600 font-medium flex items-center">
                 <Zap className="h-4 w-4 mr-2" />
                 Community impact
               </p>
             </CardContent>
           </Card>
           
-          <Card className="border border-white/10 shadow-2xl bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden hover:bg-white/15 transition-all duration-300">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-semibold text-white/90">
+              <CardTitle className="text-sm font-semibold text-gray-700">
                 Active Members
               </CardTitle>
-              <div className="p-3 bg-gradient-to-br from-blue-500/80 to-blue-600/80 rounded-2xl shadow-lg backdrop-blur-sm">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
                 <Users className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold text-white mb-2">
+              <div className="text-4xl font-bold text-gray-900 mb-2">
                 {loading ? '...' : stats.communityMembers}
               </div>
-              <p className="text-sm text-blue-400 font-medium flex items-center">
+              <p className="text-sm text-blue-600 font-medium flex items-center">
                 <Heart className="h-4 w-4 mr-2" />
                 Growing daily
               </p>
@@ -227,13 +225,13 @@ export default function Home() {
           </Card>
         </div>
       
-        {/* How it Works - Dark Glass Theme */}
-        <div className="relative text-center space-y-16 px-6">
-          <div className="relative z-10">
-            <h2 className="text-5xl font-bold text-white mb-6 tracking-tight">
+        {/* How it Works */}
+        <div className="text-center space-y-16 px-6">
+          <div>
+            <h2 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">
               How It Works
             </h2>
-            <p className="text-2xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
+            <p className="text-2xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
               Three simple steps to make your community safer
             </p>
           </div>
@@ -244,8 +242,8 @@ export default function Home() {
                 <Camera className="h-12 w-12 text-white" />
               </div>
               <div>
-                <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">1. Take a Photo</h3>
-                <p className="text-white/70 leading-relaxed text-lg font-light">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">1. Take a Photo</h3>
+                <p className="text-gray-600 leading-relaxed text-lg font-light">
                   Snap a clear picture of the pothole with your phone. Our app makes it quick and easy.
                 </p>
               </div>
@@ -256,8 +254,8 @@ export default function Home() {
                 <MapPin className="h-12 w-12 text-white" />
               </div>
               <div>
-                <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">2. Confirm Location</h3>
-                <p className="text-white/70 leading-relaxed text-lg font-light">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">2. Confirm Location</h3>
+                <p className="text-gray-600 leading-relaxed text-lg font-light">
                   We automatically detect your location with GPS for accurate reporting and faster response.
                 </p>
               </div>
@@ -268,8 +266,8 @@ export default function Home() {
                 <CheckCircle className="h-12 w-12 text-white" />
               </div>
               <div>
-                <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">3. Make Impact</h3>
-                <p className="text-white/70 leading-relaxed text-lg font-light">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">3. Make Impact</h3>
+                <p className="text-gray-600 leading-relaxed text-lg font-light">
                   Your report helps prioritize repairs and keeps the community informed about road conditions.
                 </p>
               </div>
