@@ -93,7 +93,7 @@ export default function Home() {
               <Link href="/report">
                 <StarBorder 
                   as="div"
-                  color="cyan" 
+                  color="#f59e0b" 
                   speed="5s"
                   className="rounded-2xl"
                 >
