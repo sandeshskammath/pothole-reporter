@@ -21,9 +21,6 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
   const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
-    console.log('🗺️ SimpleMap: Received reports:', reports?.length || 0);
-    console.log('🗺️ SimpleMap: Reports data:', reports);
-    
     if (typeof window === 'undefined' || !mapRef.current) return;
 
     // Dynamically import Leaflet to avoid SSR issues
@@ -112,53 +109,164 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
         };
 
         // Add markers
-        console.log('🗺️ SimpleMap: Creating markers for', reports.length, 'reports');
         const markers: any[] = [];
         for (const report of reports) {
-          console.log('🗺️ SimpleMap: Creating marker for report:', report.id, 'at', report.latitude, report.longitude);
           const marker = L.marker([report.latitude, report.longitude], {
             icon: createCustomIcon(report.status)
           });
 
-          // Create popup with loading state initially
+          // Create popup with Apple-style design matching the reference image
           const createPopupContent = (address?: string) => `
-            <div style="min-width: 240px; max-width: 300px;">
-              <div style="margin-bottom: 12px;">
+            <div style="
+              min-width: 280px; 
+              max-width: 320px; 
+              background: white; 
+              border-radius: 16px; 
+              overflow: hidden;
+              box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            ">
+              <!-- Close button -->
+              <div style="position: relative;">
                 <img 
                   src="${report.photo_url}" 
-                  alt="Pothole" 
-                  style="width: 100%; height: 128px; object-fit: cover; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                  alt="Pothole Report" 
+                  style="
+                    width: 100%; 
+                    height: 160px; 
+                    object-fit: cover;
+                  "
                   onerror="this.src='/placeholder-image.svg'"
                 />
+                <div style="
+                  position: absolute;
+                  top: 12px;
+                  right: 12px;
+                  width: 28px;
+                  height: 28px;
+                  background: rgba(0,0,0,0.4);
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  cursor: pointer;
+                  backdrop-filter: blur(8px);
+                ">
+                  <span style="color: white; font-size: 16px; font-weight: 500;">×</span>
+                </div>
               </div>
-              <div>
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                  <span style="font-size: 14px; font-weight: 600; color: #374151;">Status:</span>
-                  <span style="
-                    padding: 4px 12px; 
-                    border-radius: 16px; 
-                    font-size: 12px; 
-                    font-weight: 600;
-                    ${report.status === 'new' ? 'background-color: #fef2f2; color: #dc2626;' :
-                      report.status === 'confirmed' ? 'background-color: #fefce8; color: #ca8a04;' :
-                      'background-color: #f0fdf4; color: #16a34a;'}
+              
+              <!-- Content -->
+              <div style="padding: 16px;">
+                <!-- Location with icon -->
+                <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+                  <div style="
+                    width: 20px;
+                    height: 20px;
+                    background: #007AFF;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-top: 2px;
                   ">
-                    ${report.status.replace('_', ' ')}
+                    <div style="
+                      width: 6px;
+                      height: 6px;
+                      background: white;
+                      border-radius: 50%;
+                    "></div>
+                  </div>
+                  <div style="flex: 1;">
+                    <h3 style="
+                      margin: 0;
+                      font-size: 16px;
+                      font-weight: 600;
+                      color: #1d1d1f;
+                      line-height: 1.3;
+                      margin-bottom: 2px;
+                    ">
+                      ${address || 'Loading address...'}
+                    </h3>
+                    <p style="
+                      margin: 0;
+                      font-size: 13px;
+                      color: #86868b;
+                      font-family: 'SF Mono', Monaco, monospace;
+                    ">
+                      ${report.latitude.toFixed(6)}, ${report.longitude.toFixed(6)}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Notes if available -->
+                ${report.notes ? `
+                  <div style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 8px;
+                    margin-bottom: 12px;
+                  ">
+                    <div style="
+                      width: 20px;
+                      height: 20px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      margin-top: 2px;
+                    ">
+                      <span style="font-size: 14px;">💬</span>
+                    </div>
+                    <p style="
+                      margin: 0;
+                      font-size: 14px;
+                      color: #1d1d1f;
+                      line-height: 1.4;
+                    ">
+                      ${report.notes}
+                    </p>
+                  </div>
+                ` : ''}
+
+                <!-- Date and Status -->
+                <div style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  margin-bottom: 0;
+                ">
+                  <div style="
+                    width: 20px;
+                    height: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  ">
+                    <span style="font-size: 14px;">📅</span>
+                  </div>
+                  <span style="
+                    font-size: 14px;
+                    color: #86868b;
+                    margin-right: auto;
+                  ">
+                    ${new Date(report.created_at).toLocaleDateString('en-US', { 
+                      day: 'numeric', 
+                      month: 'long', 
+                      year: 'numeric' 
+                    })}
                   </span>
-                </div>
-                ${report.notes ? `<p style="font-size: 14px; color: #6b7280; margin-bottom: 10px; line-height: 1.4;">${report.notes}</p>` : ''}
-                <div style="margin-bottom: 8px;">
-                  <p style="font-size: 13px; color: #9ca3af; margin-bottom: 2px;">
-                    📅 Reported: ${new Date(report.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div style="border-top: 1px solid #e5e7eb; padding-top: 8px;">
-                  <p style="font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 4px;">
-                    📍 ${address || 'Loading address...'}
-                  </p>
-                  <p style="font-size: 11px; color: #9ca3af; font-family: monospace;">
-                    ${report.latitude.toFixed(6)}, ${report.longitude.toFixed(6)}
-                  </p>
+                  <span style="
+                    padding: 4px 10px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    text-transform: capitalize;
+                    ${report.status === 'new' ? 'background-color: #ffebee; color: #d32f2f;' :
+                      report.status === 'confirmed' ? 'background-color: #fff8e1; color: #f57c00;' :
+                      'background-color: #e8f5e8; color: #2e7d32;'}
+                  ">
+                    ${report.status}
+                  </span>
                 </div>
               </div>
             </div>
@@ -175,26 +283,17 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
 
           marker.addTo(map);
           markers.push(marker);
-          console.log('🗺️ SimpleMap: Added marker for report:', report.id);
         }
-        
-        console.log('🗺️ SimpleMap: Total markers created and added:', markers.length);
 
         // Fit bounds if we have markers
         if (markers.length > 0) {
-          console.log('🗺️ SimpleMap: Fitting bounds for', markers.length, 'markers');
           const group = new L.FeatureGroup(markers);
-          const bounds = group.getBounds();
-          console.log('🗺️ SimpleMap: Bounds:', bounds);
-          map.fitBounds(bounds.pad(0.1));
-        } else {
-          console.log('🗺️ SimpleMap: No markers to fit bounds for');
+          map.fitBounds(group.getBounds().pad(0.1));
         }
 
         mapInstanceRef.current = map;
-        console.log('🗺️ SimpleMap: Map initialization complete');
       } catch (error) {
-        console.error('🗺️ SimpleMap: Error initializing map:', error);
+        console.error('Error initializing map:', error);
       }
     };
 

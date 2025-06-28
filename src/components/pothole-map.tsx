@@ -41,16 +41,9 @@ export function PotholeMap() {
     try {
       if (showRefreshToast) setRefreshing(true);
       
-      console.log('🗺️ Fetching reports from API...');
       const response = await fetch('/api/reports');
-      console.log('🗺️ API Response status:', response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log('🗺️ API Response data:', data);
-        console.log('🗺️ Reports received:', data.reports?.length || 0);
-        console.log('🗺️ First report sample:', data.reports?.[0]);
-        
         setReports(data.reports || []);
         
         if (showRefreshToast) {
@@ -60,11 +53,9 @@ export function PotholeMap() {
           });
         }
       } else {
-        console.error('🗺️ API Error:', response.statusText);
         throw new Error('Failed to fetch reports');
       }
     } catch (error) {
-      console.error('🗺️ Fetch error:', error);
       toast({
         title: "Error loading reports",
         description: "Unable to load pothole data. Please try again.",
