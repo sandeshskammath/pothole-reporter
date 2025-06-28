@@ -107,21 +107,22 @@ export default function Home() {
                   speed="5s"
                   className="rounded-2xl"
                 >
-                  <Camera className="mr-3 h-5 w-5" />
-                  Report a Pothole
-                  <ArrowRight className="ml-3 h-5 w-5" />
+                  <div className="flex items-center">
+                    <Camera className="mr-3 h-5 w-5" />
+                    Report a Pothole
+                    <ArrowRight className="ml-3 h-5 w-5" />
+                  </div>
                 </StarBorder>
               </Link>
-              <StarBorder 
-                as="button"
-                color="white" 
-                speed="6s"
-                className="rounded-2xl"
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="w-full sm:w-[200px] border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10"
                 onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <MapPin className="mr-3 h-5 w-5" />
                 View Map
-              </StarBorder>
+              </Button>
             </div>
             
             {/* Impact Stats */}

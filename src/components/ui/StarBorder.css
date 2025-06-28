@@ -37,6 +37,9 @@
   padding: 16px 26px;
   border-radius: 20px;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @keyframes star-movement-bottom {
