@@ -115,159 +115,153 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
             icon: createCustomIcon(report.status)
           });
 
-          // Create popup with Apple-style design matching the reference image
+          // Create popup with Apple-style design - single container, no nested containers
           const createPopupContent = (address?: string) => `
-            <div style="
-              min-width: 280px; 
-              max-width: 320px; 
-              background: white; 
-              border-radius: 16px; 
-              overflow: hidden;
-              box-shadow: 0 4px 24px rgba(0,0,0,0.15);
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            ">
-              <!-- Close button -->
-              <div style="position: relative;">
-                <img 
-                  src="${report.photo_url}" 
-                  alt="Pothole Report" 
-                  style="
-                    width: 100%; 
-                    height: 160px; 
-                    object-fit: cover;
-                  "
-                  onerror="this.src='/placeholder-image.svg'"
-                />
+            <!-- Image with close button -->
+            <div style="position: relative; margin: -12px -12px 0 -12px;">
+              <img 
+                src="${report.photo_url}" 
+                alt="Pothole Report" 
+                style="
+                  width: 100%; 
+                  height: 160px; 
+                  object-fit: cover;
+                  border-radius: 12px 12px 0 0;
+                "
+                onerror="this.src='/placeholder-image.svg'"
+              />
+              <div style="
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                width: 28px;
+                height: 28px;
+                background: rgba(0,0,0,0.4);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                backdrop-filter: blur(8px);
+              ">
+                <span style="color: white; font-size: 16px; font-weight: 500;">×</span>
+              </div>
+            </div>
+            
+            <!-- Content -->
+            <div style="padding: 16px 12px 12px 12px;">
+              <!-- Location with map pin icon -->
+              <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
                 <div style="
-                  position: absolute;
-                  top: 12px;
-                  right: 12px;
-                  width: 28px;
-                  height: 28px;
-                  background: rgba(0,0,0,0.4);
-                  border-radius: 50%;
+                  width: 20px;
+                  height: 20px;
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  cursor: pointer;
-                  backdrop-filter: blur(8px);
+                  margin-top: 2px;
                 ">
-                  <span style="color: white; font-size: 16px; font-weight: 500;">×</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </div>
+                <div style="flex: 1;">
+                  <h3 style="
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #1d1d1f;
+                    line-height: 1.3;
+                    margin-bottom: 2px;
+                  ">
+                    ${address || 'Loading address...'}
+                  </h3>
+                  <p style="
+                    margin: 0;
+                    font-size: 13px;
+                    color: #86868b;
+                    font-family: 'SF Mono', Monaco, monospace;
+                  ">
+                    ${report.latitude.toFixed(6)}, ${report.longitude.toFixed(6)}
+                  </p>
                 </div>
               </div>
-              
-              <!-- Content -->
-              <div style="padding: 16px;">
-                <!-- Location with icon -->
-                <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+
+              <!-- Notes if available -->
+              ${report.notes ? `
+                <div style="
+                  display: flex;
+                  align-items: flex-start;
+                  gap: 8px;
+                  margin-bottom: 12px;
+                ">
                   <div style="
                     width: 20px;
                     height: 20px;
-                    background: #007AFF;
-                    border-radius: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     margin-top: 2px;
                   ">
-                    <div style="
-                      width: 6px;
-                      height: 6px;
-                      background: white;
-                      border-radius: 50%;
-                    "></div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86868b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
                   </div>
-                  <div style="flex: 1;">
-                    <h3 style="
-                      margin: 0;
-                      font-size: 16px;
-                      font-weight: 600;
-                      color: #1d1d1f;
-                      line-height: 1.3;
-                      margin-bottom: 2px;
-                    ">
-                      ${address || 'Loading address...'}
-                    </h3>
-                    <p style="
-                      margin: 0;
-                      font-size: 13px;
-                      color: #86868b;
-                      font-family: 'SF Mono', Monaco, monospace;
-                    ">
-                      ${report.latitude.toFixed(6)}, ${report.longitude.toFixed(6)}
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Notes if available -->
-                ${report.notes ? `
-                  <div style="
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 8px;
-                    margin-bottom: 12px;
+                  <p style="
+                    margin: 0;
+                    font-size: 14px;
+                    color: #1d1d1f;
+                    line-height: 1.4;
                   ">
-                    <div style="
-                      width: 20px;
-                      height: 20px;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      margin-top: 2px;
-                    ">
-                      <span style="font-size: 14px;">💬</span>
-                    </div>
-                    <p style="
-                      margin: 0;
-                      font-size: 14px;
-                      color: #1d1d1f;
-                      line-height: 1.4;
-                    ">
-                      ${report.notes}
-                    </p>
-                  </div>
-                ` : ''}
+                    ${report.notes}
+                  </p>
+                </div>
+              ` : ''}
 
-                <!-- Date and Status -->
+              <!-- Date and Status -->
+              <div style="
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 0;
+              ">
                 <div style="
+                  width: 20px;
+                  height: 20px;
                   display: flex;
                   align-items: center;
-                  gap: 8px;
-                  margin-bottom: 0;
+                  justify-content: center;
                 ">
-                  <div style="
-                    width: 20px;
-                    height: 20px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                  ">
-                    <span style="font-size: 14px;">📅</span>
-                  </div>
-                  <span style="
-                    font-size: 14px;
-                    color: #86868b;
-                    margin-right: auto;
-                  ">
-                    ${new Date(report.created_at).toLocaleDateString('en-US', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })}
-                  </span>
-                  <span style="
-                    padding: 4px 10px;
-                    border-radius: 12px;
-                    font-size: 12px;
-                    font-weight: 600;
-                    text-transform: capitalize;
-                    ${report.status === 'new' ? 'background-color: #ffebee; color: #d32f2f;' :
-                      report.status === 'confirmed' ? 'background-color: #fff8e1; color: #f57c00;' :
-                      'background-color: #e8f5e8; color: #2e7d32;'}
-                  ">
-                    ${report.status}
-                  </span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86868b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
                 </div>
+                <span style="
+                  font-size: 14px;
+                  color: #86868b;
+                  margin-right: auto;
+                ">
+                  ${new Date(report.created_at).toLocaleDateString('en-US', { 
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric' 
+                  })}
+                </span>
+                <span style="
+                  padding: 4px 10px;
+                  border-radius: 12px;
+                  font-size: 12px;
+                  font-weight: 600;
+                  text-transform: capitalize;
+                  ${report.status === 'new' ? 'background-color: #ffebee; color: #d32f2f;' :
+                    report.status === 'confirmed' ? 'background-color: #fff8e1; color: #f57c00;' :
+                    'background-color: #e8f5e8; color: #2e7d32;'}
+                ">
+                  ${report.status}
+                </span>
               </div>
             </div>
           `;
