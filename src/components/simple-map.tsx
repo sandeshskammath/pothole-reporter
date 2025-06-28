@@ -117,7 +117,7 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
 
           // Create popup with Apple-style design - single container, no nested containers
           const createPopupContent = (address?: string) => `
-            <div style="position: relative; margin: -16px -16px 0 -16px;">
+            <div style="position: relative; margin: -10px -10px 0 -10px;">
               <img 
                 src="${report.photo_url}" 
                 alt="Pothole Report" 
@@ -125,14 +125,14 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                   width: 100%; 
                   height: 160px; 
                   object-fit: cover;
-                  border-radius: 16px 16px 0 0;
+                  border-radius: 12px 12px 0 0;
                 "
                 onerror="this.src='/placeholder-image.svg'"
               />
               <div style="
                 position: absolute;
-                top: 16px;
-                right: 16px;
+                top: 12px;
+                right: 12px;
                 width: 28px;
                 height: 28px;
                 background: rgba(0,0,0,0.4);
@@ -142,7 +142,7 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                 justify-content: center;
                 cursor: pointer;
                 backdrop-filter: blur(8px);
-              ">
+              " onclick="this.closest('.leaflet-popup').style.display='none'">
                 <span style="color: white; font-size: 16px; font-weight: 500;">×</span>
               </div>
             </div>
