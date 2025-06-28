@@ -117,7 +117,7 @@ export default function Home() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="w-full sm:w-[200px] border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-6 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10 h-[60px] flex items-center justify-center"
+                className="w-full sm:w-[200px] border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-6 py-4 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10 h-[54px] flex items-center justify-center text-base"
                 onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <MapPin className="mr-3 h-5 w-5" />
@@ -197,7 +197,7 @@ export default function Home() {
               <CardTitle className="text-sm font-semibold text-white/90">
                 In Progress
               </CardTitle>
-              <div className="p-3 bg-gradient-to-br from-orange-500/80 to-orange-600/80 rounded-2xl shadow-lg backdrop-blur-sm">
+              <div className="p-3 bg-gradient-to-br from-blue-500/80 to-blue-600/80 rounded-2xl shadow-lg backdrop-blur-sm">
                 <Wrench className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
@@ -205,7 +205,7 @@ export default function Home() {
               <div className="text-4xl font-bold text-white mb-2">
                 {loading ? '...' : stats.inProgressCount}
               </div>
-              <p className="text-sm text-orange-400 font-medium flex items-center">
+              <p className="text-sm text-blue-400 font-medium flex items-center">
                 <Clock className="h-4 w-4 mr-2" />
                 Being repaired
               </p>

@@ -367,9 +367,9 @@ export function ReportForm() {
                     </AlertDescription>
                   </Alert>
                 ) : (
-                  <Alert className="bg-orange-500/20 border-orange-400/40 backdrop-blur-sm rounded-2xl p-4">
-                    <AlertCircle className="h-5 w-5 text-orange-400" />
-                    <AlertDescription className="text-orange-300 font-medium ml-2">
+                  <Alert className="bg-blue-500/20 border-blue-400/40 backdrop-blur-sm rounded-2xl p-4">
+                    <AlertCircle className="h-5 w-5 text-blue-400" />
+                    <AlertDescription className="text-blue-300 font-medium ml-2">
                       Location access required to report potholes accurately.
                     </AlertDescription>
                   </Alert>
