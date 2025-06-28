@@ -16,5 +16,11 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  },
+  "ignoreCommand": "exit 1"
 }
