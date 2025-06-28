@@ -69,7 +69,7 @@ export default function Home() {
                 <Shield className="mr-2 h-4 w-4" />
                 Community-Driven Road Safety
               </Badge>
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-[0.9] tracking-tight">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-tight tracking-tight">
                 Making Roads
                 <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
                   Safer Together
@@ -82,7 +82,7 @@ export default function Home() {
             
             <div className="animate-fade-in-up animation-delay-200 flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/report">
-                <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-10 py-5 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 group border border-blue-500/20 backdrop-blur-sm">
+                <Button size="lg" className="w-full sm:w-auto min-w-[180px] bg-blue-600 text-white hover:bg-blue-700 font-semibold px-10 py-5 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 group border border-blue-500/20 backdrop-blur-sm">
                   <Camera className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" />
                   Report a Pothole
                   <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -91,7 +91,7 @@ export default function Home() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10"
+                className="w-full sm:w-auto min-w-[180px] border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10"
                 onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <MapPin className="mr-3 h-5 w-5" />
