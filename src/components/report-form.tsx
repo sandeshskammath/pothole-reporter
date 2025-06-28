@@ -320,27 +320,27 @@ export function ReportForm() {
   };
   
   return (
-    <Card className="w-full mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
+    <Card className="w-full mx-auto bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl overflow-hidden">
       <CardHeader className="pb-6">
-        <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-900 tracking-tight">
-          <div className="p-2 bg-blue-100 rounded-2xl">
-            <Camera className="h-6 w-6 text-blue-600" />
+        <CardTitle className="flex items-center gap-3 text-2xl font-bold text-white tracking-tight">
+          <div className="p-2 bg-blue-500/20 backdrop-blur-sm rounded-2xl border border-blue-400/30">
+            <Camera className="h-6 w-6 text-blue-400" />
           </div>
           Report a Pothole
         </CardTitle>
-        <CardDescription className="text-lg text-gray-600 font-light">
+        <CardDescription className="text-lg text-white/70 font-light">
           Help make our roads safer by reporting road damage
         </CardDescription>
       </CardHeader>
       <CardContent className="px-6 pb-6">
         {submitSuccess ? (
           <div className="text-center space-y-6 py-12">
-            <div className="w-20 h-20 bg-green-100 rounded-3xl flex items-center justify-center mx-auto">
-              <CheckCircle className="h-12 w-12 text-green-600" />
+            <div className="w-20 h-20 bg-green-500/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto border border-green-400/30">
+              <CheckCircle className="h-12 w-12 text-green-400" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-green-700 mb-2">Report Submitted!</h3>
-              <p className="text-gray-600 font-light">Thank you for helping improve road safety.</p>
+              <h3 className="text-2xl font-bold text-green-400 mb-2">Report Submitted!</h3>
+              <p className="text-white/70 font-light">Thank you for helping improve road safety.</p>
             </div>
             <Progress value={100} className="w-full h-2 rounded-full" />
           </div>
@@ -350,9 +350,9 @@ export function ReportForm() {
               {/* Location Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-lg font-semibold text-gray-900">Location</label>
+                  <label className="text-lg font-semibold text-white">Location</label>
                   {location && (
-                    <Badge className="bg-green-100 text-green-700 border-0 px-3 py-1 rounded-full text-sm font-medium">
+                    <Badge className="bg-green-500/20 text-green-400 border border-green-400/30 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
                       <MapPin className="h-4 w-4 mr-2" />
                       Accuracy: {location.accuracy ? Math.round(location.accuracy) : 'Unknown'}m
                     </Badge>

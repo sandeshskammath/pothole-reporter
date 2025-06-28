@@ -324,20 +324,20 @@ export default function Home() {
           </div>
         </div>
       
-        {/* Call to Action */}
-        <div className="text-center space-y-12 py-20 px-6">
-          <div>
-            <h2 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+        {/* Call to Action - Dark Glass Theme */}
+        <div className="relative text-center space-y-12 py-20 px-6">
+          <div className="relative z-10">
+            <h2 className="text-5xl font-bold text-white mb-6 tracking-tight">
               Ready to Make a Difference?
             </h2>
-            <p className="text-2xl text-gray-600 max-w-3xl mx-auto mb-12 font-light leading-relaxed">
+            <p className="text-2xl text-white/70 max-w-3xl mx-auto mb-12 font-light leading-relaxed">
               Join our community of citizens working together to improve road safety. Every report helps make our streets safer for everyone.
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <div className="relative z-10 flex flex-col sm:flex-row gap-6 justify-center">
             <Link href="/report">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-12 py-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 group border border-blue-500/20">
+              <Button size="lg" className="bg-blue-600/90 hover:bg-blue-700 text-white font-semibold px-12 py-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 group border border-blue-500/30 backdrop-blur-sm">
                 <Camera className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
                 Report Your First Pothole
                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
@@ -346,7 +346,7 @@ export default function Home() {
             <Button 
               variant="outline" 
               size="lg" 
-              className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold px-12 py-6 rounded-2xl backdrop-blur-sm transition-all duration-300"
+              className="border-2 border-white/30 text-white hover:bg-white/10 font-semibold px-12 py-6 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:border-white/50"
               onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
             >
               <MapPin className="mr-3 h-6 w-6" />
