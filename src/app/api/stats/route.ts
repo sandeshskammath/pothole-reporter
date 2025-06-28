@@ -1,24 +1,5 @@
 import { NextResponse } from 'next/server';
-
-// Use real database in production, mock for development
-let dbModule: any;
-const isProduction = process.env.NODE_ENV === 'production';
-const hasDatabase = process.env.POSTGRES_URL;
-
-if (isProduction && hasDatabase) {
-  try {
-    dbModule = require('@/lib/db');
-    console.log('Using production database for stats');
-  } catch (error) {
-    console.log('Fallback to mock database for stats');
-    dbModule = require('@/lib/mock-db');
-  }
-} else {
-  console.log('Using mock database for development stats');
-  dbModule = require('@/lib/mock-db');
-}
-
-const { getReportStats, getAllReports } = dbModule;
+import { getAllReports } from '@/lib/db';
 
 export async function GET() {
   try {
