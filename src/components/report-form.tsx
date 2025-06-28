@@ -360,16 +360,16 @@ export function ReportForm() {
                 </div>
                 
                 {location ? (
-                  <Alert className="bg-green-50 border-green-200 rounded-2xl p-4">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <AlertDescription className="text-green-700 font-medium ml-2">
+                  <Alert className="bg-green-500/20 border-green-400/40 backdrop-blur-sm rounded-2xl p-4">
+                    <CheckCircle className="h-5 w-5 text-green-400" />
+                    <AlertDescription className="text-green-300 font-medium ml-2">
                       Location detected: {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
                     </AlertDescription>
                   </Alert>
                 ) : (
-                  <Alert className="bg-orange-50 border-orange-200 rounded-2xl p-4">
-                    <AlertCircle className="h-5 w-5 text-orange-600" />
-                    <AlertDescription className="text-orange-700 font-medium ml-2">
+                  <Alert className="bg-orange-500/20 border-orange-400/40 backdrop-blur-sm rounded-2xl p-4">
+                    <AlertCircle className="h-5 w-5 text-orange-400" />
+                    <AlertDescription className="text-orange-300 font-medium ml-2">
                       Location access required to report potholes accurately.
                     </AlertDescription>
                   </Alert>
@@ -389,9 +389,9 @@ export function ReportForm() {
                   </Button>
                   
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 h-px bg-gray-200"></div>
-                    <span className="text-sm text-gray-500 px-3 font-medium">OR</span>
-                    <div className="flex-1 h-px bg-gray-200"></div>
+                    <div className="flex-1 h-px bg-white/30"></div>
+                    <span className="text-sm text-white/70 px-3 font-medium">OR</span>
+                    <div className="flex-1 h-px bg-white/30"></div>
                   </div>
                   
                   <div className="relative">
@@ -404,29 +404,29 @@ export function ReportForm() {
                           onKeyPress={(e) => e.key === 'Enter' && searchLocation()}
                           onFocus={() => locationSuggestions.length > 0 && setShowSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                          className="flex-1 h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-base pr-8"
+                          className="flex-1 h-12 rounded-2xl bg-white/10 border-white/30 focus:border-blue-400 focus:ring-blue-400 text-white placeholder:text-white/50 text-base pr-8 backdrop-blur-sm"
                         />
                         {searchLoading && (
-                          <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                          <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-white/70" />
                         )}
                         
                         {/* Suggestions Dropdown */}
                         {showSuggestions && locationSuggestions.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 max-h-64 overflow-y-auto">
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl shadow-xl z-50 max-h-64 overflow-y-auto">
                             {locationSuggestions.map((suggestion, index) => (
                               <button
                                 key={suggestion.place_id || index}
                                 type="button"
                                 onClick={() => selectLocationSuggestion(suggestion)}
-                                className="w-full text-left px-4 py-3 hover:bg-gray-50 first:rounded-t-2xl last:rounded-b-2xl border-b border-gray-100 last:border-b-0 transition-colors"
+                                className="w-full text-left px-4 py-3 hover:bg-white/20 first:rounded-t-2xl last:rounded-b-2xl border-b border-white/20 last:border-b-0 transition-colors"
                               >
                                 <div className="flex items-start gap-3">
-                                  <MapPin className="h-4 w-4 text-blue-600 mt-1 flex-shrink-0" />
+                                  <MapPin className="h-4 w-4 text-blue-400 mt-1 flex-shrink-0" />
                                   <div className="min-w-0">
-                                    <div className="font-medium text-gray-900 truncate">
+                                    <div className="font-medium text-white truncate">
                                       {suggestion.display_name.split(',')[0]}
                                     </div>
-                                    <div className="text-sm text-gray-600 truncate">
+                                    <div className="text-sm text-white/70 truncate">
                                       {suggestion.display_name.split(',').slice(1).join(',').trim()}
                                     </div>
                                   </div>
@@ -460,7 +460,7 @@ export function ReportForm() {
                 name="photo"
                 render={({ field: { onChange, value, ...field } }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-semibold text-gray-900">Photo</FormLabel>
+                    <FormLabel className="text-lg font-semibold text-white">Photo</FormLabel>
                     <FormControl>
                       <div className="space-y-6">
                         <div className="flex gap-3">
@@ -468,7 +468,7 @@ export function ReportForm() {
                             type="button"
                             variant="outline"
                             onClick={() => document.getElementById('photo-input')?.click()}
-                            className="flex-1 h-12 rounded-2xl border-gray-200 hover:bg-gray-50 font-semibold"
+                            className="flex-1 h-12 rounded-2xl bg-white/10 border-white/30 hover:bg-white/20 text-white hover:text-white font-semibold backdrop-blur-sm"
                           >
                             <Camera className="h-5 w-5 mr-3" />
                             {value ? 'Change Photo' : 'Take Photo'}
@@ -479,7 +479,7 @@ export function ReportForm() {
                               variant="outline"
                               size="icon"
                               onClick={() => setPhotoDialogOpen(true)}
-                              className="h-12 w-12 rounded-2xl border-gray-200 hover:bg-gray-50"
+                              className="h-12 w-12 rounded-2xl bg-white/10 border-white/30 hover:bg-white/20 text-white hover:text-white backdrop-blur-sm"
                             >
                               <Upload className="h-5 w-5" />
                             </Button>
@@ -509,7 +509,7 @@ export function ReportForm() {
                         )}
                       </div>
                     </FormControl>
-                    <FormDescription className="text-base text-gray-600 font-light">
+                    <FormDescription className="text-base text-white/70 font-light">
                       Take or upload a clear photo of the pothole. Max 5MB.
                     </FormDescription>
                     <FormMessage />
@@ -523,17 +523,17 @@ export function ReportForm() {
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-lg font-semibold text-gray-900">Additional Notes (Optional)</FormLabel>
+                    <FormLabel className="text-lg font-semibold text-white">Additional Notes (Optional)</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Very deep, near the school entrance, affects bike lane..."
-                        className="resize-none rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-base"
+                        className="resize-none rounded-2xl bg-white/10 border-white/30 focus:border-blue-400 focus:ring-blue-400 text-white placeholder:text-white/50 text-base backdrop-blur-sm"
                         rows={4}
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription className="text-base text-gray-600 font-light">
-                      Any details that might help locate or assess the pothole (max 500 characters)
+                    <FormDescription className="text-base text-white/70 font-light">
+                      Any details that might help locate or assess the pothole (max 200 characters)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -563,7 +563,7 @@ export function ReportForm() {
               </Button>
               
               {(!location || !form.watch('photo')) && (
-                <p className="text-base text-gray-500 text-center font-light">
+                <p className="text-base text-white/70 text-center font-light">
                   {!location && !form.watch('photo') ? 'Photo and location required' :
                    !location ? 'Location required' : 'Photo required'}
                 </p>

@@ -112,7 +112,7 @@ export function PotholeMap() {
               size="sm"
               onClick={() => fetchReports(true)}
               disabled={refreshing}
-              className="h-10 px-4 rounded-2xl border-white/30 hover:bg-white/10 text-white hover:text-white backdrop-blur-sm hover:border-white/50 transition-all duration-300"
+              className="h-10 px-4 rounded-2xl border-white/50 bg-white/20 hover:bg-white/30 text-white hover:text-white backdrop-blur-sm hover:border-white/70 transition-all duration-300"
             >
               {refreshing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
