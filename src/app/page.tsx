@@ -117,7 +117,7 @@ export default function Home() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="w-full sm:w-[200px] border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10"
+                className="w-full sm:w-[200px] border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-6 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10 h-[60px] flex items-center justify-center"
                 onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <MapPin className="mr-3 h-5 w-5" />
