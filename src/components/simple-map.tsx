@@ -142,7 +142,7 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                 justify-content: center;
                 cursor: pointer;
                 backdrop-filter: blur(8px);
-              " onclick="this.closest('.leaflet-popup').style.display='none'">
+              " onclick="window.currentMap && window.currentMap.closePopup()">
                 <span style="color: white; font-size: 16px; font-weight: 500;">×</span>
               </div>
             </div>
@@ -283,6 +283,8 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
         }
 
         mapInstanceRef.current = map;
+        // Store map reference globally for close button access
+        (window as any).currentMap = map;
       } catch (error) {
         console.error('Error initializing map:', error);
       }
