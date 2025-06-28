@@ -55,7 +55,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800">
       {/* Background Effects */}
       <Noise
         patternSize={250}
@@ -66,7 +66,7 @@ export default function Home() {
       />
       
       {/* Apple-inspired Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div className="relative overflow-hidden">
         {/* Glass morphism background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/10 to-transparent"></div>
