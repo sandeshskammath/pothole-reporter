@@ -65,7 +65,7 @@ export default function Home() {
           <div className="absolute bottom-20 right-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
         </div>
         
-        <div className="relative container mx-auto px-6 py-20 lg:py-32">
+        <div className="relative container mx-auto px-6 py-12 lg:py-20">
           <div className="text-center space-y-8 max-w-4xl mx-auto">
             <div className="animate-fade-in-up">
               <Badge className="mb-6 bg-white/10 text-white border-white/20 hover:bg-white/20 backdrop-blur-sm px-4 py-2 text-sm font-medium rounded-full">
