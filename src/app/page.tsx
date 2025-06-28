@@ -7,11 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Camera, MapPin, Users, ArrowRight, CheckCircle, Clock, Wrench, TrendingUp, Zap, Heart, Star, Shield } from 'lucide-react';
 import { ReportForm } from '@/components/report-form';
 import { PotholeMap } from '@/components/pothole-map';
-import { GradientText } from '@/components/ui/gradient-text';
-import { Noise } from '@/components/ui/noise';
-import { SplashCursor } from '@/components/ui/splash-cursor';
-import { StarBorder } from '@/components/ui/star-border';
-import { SquaresBackground } from '@/components/ui/squares-background';
+import GradientText from '@/components/ui/GradientText';
+import Noise from '@/components/ui/Noise';
+import StarBorder from '@/components/ui/StarBorder';
 import Link from 'next/link';
 
 interface Stats {
@@ -59,13 +57,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
       {/* Background Effects */}
-      <SquaresBackground 
-        squareSize={35} 
-        speed={15} 
-        color="#60a5fa" 
-        opacity={0.08} 
+      <Noise
+        patternSize={250}
+        patternScaleX={1}
+        patternScaleY={1}
+        patternRefreshInterval={2}
+        patternAlpha={15}
       />
-      <Noise opacity={0.04} />
       
       {/* Apple-inspired Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -86,9 +84,10 @@ export default function Home() {
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-normal tracking-tight">
                 Making Roads
                 <span className="block">
-                  <GradientText 
-                    colors={["#60a5fa", "#a855f7", "#60a5fa"]} 
-                    animationSpeed={4}
+                  <GradientText
+                    colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
+                    animationSpeed={3}
+                    showBorder={false}
                     className="block"
                   >
                     Safer Together
@@ -102,24 +101,26 @@ export default function Home() {
             
             <div className="animate-fade-in-up animation-delay-200 flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/report">
-                <StarBorder className="rounded-2xl" color="#3b82f6" speed={3}>
-                  <Button size="lg" className="w-full sm:w-[200px] bg-blue-600 text-white hover:bg-blue-700 font-semibold px-10 py-5 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 group border border-blue-500/20 backdrop-blur-sm">
-                    <Camera className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" />
-                    Report a Pothole
-                    <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                <StarBorder 
+                  as="div"
+                  color="cyan" 
+                  speed="5s"
+                  className="rounded-2xl"
+                >
+                  <Camera className="mr-3 h-5 w-5" />
+                  Report a Pothole
+                  <ArrowRight className="ml-3 h-5 w-5" />
                 </StarBorder>
               </Link>
-              <StarBorder className="rounded-2xl" color="#8b5cf6" speed={2.5}>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="w-full sm:w-[200px] border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-10 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10"
-                  onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  <MapPin className="mr-3 h-5 w-5" />
-                  View Map
-                </Button>
+              <StarBorder 
+                as="button"
+                color="white" 
+                speed="6s"
+                className="rounded-2xl"
+                onClick={() => document.getElementById('community-map')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                <MapPin className="mr-3 h-5 w-5" />
+                View Map
               </StarBorder>
             </div>
             
@@ -161,14 +162,10 @@ export default function Home() {
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row gap-16 px-6">
           <div className="lg:w-[38%]">
-            <SplashCursor color="#3b82f6" size={80}>
-              <ReportForm />
-            </SplashCursor>
+            <ReportForm />
           </div>
           <div className="lg:w-[62%]" id="community-map">
-            <SplashCursor color="#8b5cf6" size={90}>
-              <PotholeMap />
-            </SplashCursor>
+            <PotholeMap />
           </div>
         </div>
       
