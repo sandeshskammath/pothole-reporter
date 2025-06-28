@@ -381,7 +381,7 @@ export function ReportForm() {
                     variant={location ? "outline" : "default"}
                     onClick={getCurrentLocation}
                     disabled={locationLoading}
-                    className="w-full h-12 rounded-2xl font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="w-full h-12 rounded-2xl font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     {locationLoading && <Loader2 className="mr-3 h-5 w-5 animate-spin" />}
                     <MapPin className="mr-3 h-5 w-5" />
@@ -542,10 +542,10 @@ export function ReportForm() {
               
               {/* Upload Progress */}
               {isSubmitting && (
-                <div className="space-y-3 bg-blue-50 rounded-2xl p-4">
+                <div className="space-y-3 bg-blue-500/20 rounded-2xl p-4">
                   <div className="flex justify-between text-base font-medium">
-                    <span className="text-blue-700">Uploading report...</span>
-                    <span className="text-blue-600">{Math.round(uploadProgress)}%</span>
+                    <span className="text-blue-300">Uploading report...</span>
+                    <span className="text-blue-200">{Math.round(uploadProgress)}%</span>
                   </div>
                   <Progress value={uploadProgress} className="w-full h-2 rounded-full" />
                 </div>
@@ -554,7 +554,7 @@ export function ReportForm() {
               {/* Submit Button */}
               <Button 
                 type="submit" 
-                className="w-full h-14 rounded-2xl text-lg font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300" 
+                className="w-full h-14 rounded-2xl text-lg font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 bg-blue-600 hover:bg-blue-700 text-white" 
                 disabled={isSubmitting || !location || !form.watch('photo')}
                 size="lg"
               >
