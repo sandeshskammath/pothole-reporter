@@ -117,7 +117,7 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
 
           // Create popup with Apple-style design - single container, no nested containers
           const createPopupContent = (address?: string) => `
-            <div style="position: relative; margin: -12px -12px 0 -12px;">
+            <div style="position: relative; margin: -16px -16px 0 -16px;">
               <img 
                 src="${report.photo_url}" 
                 alt="Pothole Report" 
@@ -125,14 +125,14 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                   width: 100%; 
                   height: 160px; 
                   object-fit: cover;
-                  border-radius: 12px 12px 0 0;
+                  border-radius: 16px 16px 0 0;
                 "
                 onerror="this.src='/placeholder-image.svg'"
               />
               <div style="
                 position: absolute;
-                top: 12px;
-                right: 12px;
+                top: 16px;
+                right: 16px;
                 width: 28px;
                 height: 28px;
                 background: rgba(0,0,0,0.4);
@@ -146,7 +146,7 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                 <span style="color: white; font-size: 16px; font-weight: 500;">×</span>
               </div>
             </div>
-            <div style="padding: 16px 12px 12px 12px;">
+            <div style="padding: 16px;">
               <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
                 <div style="
                   width: 20px;
@@ -262,7 +262,8 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
           marker.bindPopup(createPopupContent(), {
             maxWidth: 320,
             minWidth: 280,
-            className: 'custom-popup'
+            className: 'custom-popup',
+            closeButton: false // Hide Leaflet's default close button
           });
           
           // When popup opens, fetch and update address
