@@ -102,7 +102,13 @@ export async function createReport(data: CreateReportData): Promise<PotholeRepor
       VALUES (${latitude}, ${longitude}, ${photo_url}, ${notes || null})
       RETURNING *
     `;
-    return result.rows[0] as PotholeReport;
+    // Convert string coordinates to numbers for proper map rendering
+    const row = result.rows[0];
+    return {
+      ...row,
+      latitude: parseFloat(row.latitude),
+      longitude: parseFloat(row.longitude)
+    } as PotholeReport;
   }
   
   // Development fallback - create a mock report
@@ -132,7 +138,12 @@ export async function getAllReports(): Promise<PotholeReport[]> {
       SELECT * FROM pothole_reports 
       ORDER BY created_at DESC
     `;
-    return result.rows as PotholeReport[];
+    // Convert string coordinates to numbers for proper map rendering
+    return result.rows.map(row => ({
+      ...row,
+      latitude: parseFloat(row.latitude),
+      longitude: parseFloat(row.longitude)
+    })) as PotholeReport[];
   }
   
   // Development fallback
@@ -149,7 +160,12 @@ export async function getReportsByStatus(status: 'new' | 'confirmed' | 'fixed'):
     ORDER BY created_at DESC
   `;
   
-  return result.rows as PotholeReport[];
+  // Convert string coordinates to numbers for proper map rendering
+  return result.rows.map(row => ({
+    ...row,
+    latitude: parseFloat(row.latitude),
+    longitude: parseFloat(row.longitude)
+  })) as PotholeReport[];
 }
 
 /**
@@ -181,7 +197,12 @@ export async function findNearbyReports(
       )) <= ${radiusMeters}
       ORDER BY distance_meters
     `;
-    return result.rows as PotholeReport[];
+    // Convert string coordinates to numbers for proper map rendering
+    return result.rows.map(row => ({
+      ...row,
+      latitude: parseFloat(row.latitude),
+      longitude: parseFloat(row.longitude)
+    })) as PotholeReport[];
   }
   
   // Development fallback - simple distance calculation
@@ -212,7 +233,13 @@ export async function updateReportStatus(
     throw new Error('Report not found');
   }
   
-  return result.rows[0] as PotholeReport;
+  // Convert string coordinates to numbers for proper map rendering
+  const row = result.rows[0];
+  return {
+    ...row,
+    latitude: parseFloat(row.latitude),
+    longitude: parseFloat(row.longitude)
+  } as PotholeReport;
 }
 
 /**
@@ -230,7 +257,13 @@ export async function confirmReport(id: string): Promise<PotholeReport> {
     throw new Error('Report not found');
   }
   
-  return result.rows[0] as PotholeReport;
+  // Convert string coordinates to numbers for proper map rendering
+  const row = result.rows[0];
+  return {
+    ...row,
+    latitude: parseFloat(row.latitude),
+    longitude: parseFloat(row.longitude)
+  } as PotholeReport;
 }
 
 /**
