@@ -18,7 +18,7 @@ interface Stats {
   impactScore: number;
 }
 
-// Test sync - updated at 3:30 AM
+// UI fixes: Fix hero text cutoff and button consistency - 10:25 AM
 export default function Home() {
   const [stats, setStats] = useState<Stats>({
     totalReports: 0,
