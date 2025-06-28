@@ -117,7 +117,6 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
 
           // Create popup with Apple-style design - single container, no nested containers
           const createPopupContent = (address?: string) => `
-            <!-- Image with close button -->
             <div style="position: relative; margin: -12px -12px 0 -12px;">
               <img 
                 src="${report.photo_url}" 
@@ -147,10 +146,7 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                 <span style="color: white; font-size: 16px; font-weight: 500;">×</span>
               </div>
             </div>
-            
-            <!-- Content -->
             <div style="padding: 16px 12px 12px 12px;">
-              <!-- Location with map pin icon -->
               <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
                 <div style="
                   width: 20px;
@@ -186,8 +182,6 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                   </p>
                 </div>
               </div>
-
-              <!-- Notes if available -->
               ${report.notes ? `
                 <div style="
                   display: flex;
@@ -217,8 +211,6 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                   </p>
                 </div>
               ` : ''}
-
-              <!-- Date and Status -->
               <div style="
                 display: flex;
                 align-items: center;
@@ -266,8 +258,12 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
             </div>
           `;
 
-          // Set initial popup content
-          marker.bindPopup(createPopupContent());
+          // Set initial popup content with explicit HTML options
+          marker.bindPopup(createPopupContent(), {
+            maxWidth: 320,
+            minWidth: 280,
+            className: 'custom-popup'
+          });
           
           // When popup opens, fetch and update address
           marker.on('popupopen', async () => {
