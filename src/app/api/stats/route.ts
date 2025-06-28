@@ -24,17 +24,22 @@ export async function GET() {
   try {
     const reports = await getAllReports();
     
-    // Calculate comprehensive stats
+    // Calculate comprehensive stats using correct database status values
+    const newReports = reports.filter((r: any) => r.status === 'new');
+    const confirmedReports = reports.filter((r: any) => r.status === 'confirmed');
+    const fixedReports = reports.filter((r: any) => r.status === 'fixed');
+    
     const stats = {
       totalReports: reports.length,
-      reportedCount: reports.filter((r: any) => r.status === 'reported').length,
-      inProgressCount: reports.filter((r: any) => r.status === 'in_progress').length,
-      fixedCount: reports.filter((r: any) => r.status === 'fixed').length,
+      reportedCount: newReports.length, // "New" reports are newly reported
+      inProgressCount: confirmedReports.length, // "Confirmed" reports are in progress
+      fixedCount: fixedReports.length,
       activeDays: new Set(reports.map((r: any) => r.created_at.split('T')[0])).size,
       avgReportsPerDay: reports.length > 0 ? Math.round(reports.length / Math.max(1, new Set(reports.map((r: any) => r.created_at.split('T')[0])).size)) : 0,
       lastReportTime: reports.length > 0 ? reports[0].created_at : null,
-      communityMembers: Math.max(reports.length, 12), // Mock community size
-      impactScore: Math.min(100, reports.length * 8 + reports.filter((r: any) => r.status === 'fixed').length * 25),
+      // Mock data for metrics that would be managed by agencies
+      communityMembers: Math.max(47 + reports.length * 3, 47), // Growing mock community
+      impactScore: Math.min(95, 12 + reports.length * 4 + fixedReports.length * 8), // Mock impact calculation
     };
 
     return NextResponse.json({
