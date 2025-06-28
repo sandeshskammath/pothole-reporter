@@ -67,7 +67,7 @@ export default function Home() {
             <div className="animate-fade-in-up">
               <Badge className="mb-6 bg-white/10 text-white border-white/20 hover:bg-white/20 backdrop-blur-sm px-4 py-2 text-sm font-medium rounded-full">
                 <Shield className="mr-2 h-4 w-4" />
-                Community-Driven Road Safety
+                🚀 DEPLOY TEST - Community-Driven Road Safety
               </Badge>
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-tight tracking-tight">
                 Making Roads
