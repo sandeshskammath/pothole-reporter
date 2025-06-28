@@ -5,15 +5,6 @@ export default function ReportPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <div className="container mx-auto py-12 max-w-3xl">
-        <div className="text-center space-y-6 mb-12">
-          <h1 className="text-5xl font-bold tracking-tight text-gray-900">
-            Report a Pothole
-          </h1>
-          <p className="text-2xl text-gray-600 font-light leading-relaxed">
-            Help improve road safety in your community
-          </p>
-        </div>
-        
         <ReportForm />
         
         <Card className="mt-12 border-0 bg-gradient-to-br from-blue-50 to-blue-100/50 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden">

@@ -134,26 +134,10 @@ export default function Home() {
       
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row gap-16 px-6">
-          <div className="lg:w-[38%] space-y-8">
-            <div className="text-center lg:text-left">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6 tracking-tight">
-                Report a Pothole
-              </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed font-light">
-                Help improve road safety in your community. It takes less than 2 minutes to make a difference.
-              </p>
-            </div>
+          <div className="lg:w-[38%]">
             <ReportForm />
           </div>
-          <div className="lg:w-[62%] space-y-8" id="community-map">
-            <div className="text-center lg:text-left">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6 tracking-tight">
-                Live Community Map
-              </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed font-light">
-                See real-time reports from your community and track the progress of road repairs.
-              </p>
-            </div>
+          <div className="lg:w-[62%]" id="community-map">
             <PotholeMap />
           </div>
         </div>
