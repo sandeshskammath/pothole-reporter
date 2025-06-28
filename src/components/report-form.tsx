@@ -412,7 +412,7 @@ export function ReportForm() {
                         
                         {/* Suggestions Dropdown */}
                         {showSuggestions && locationSuggestions.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl shadow-xl z-50 max-h-64 overflow-y-auto">
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-black/80 backdrop-blur-3xl border border-white/40 rounded-2xl shadow-2xl z-50 max-h-64 overflow-y-auto">
                             {locationSuggestions.map((suggestion, index) => (
                               <button
                                 key={suggestion.place_id || index}
