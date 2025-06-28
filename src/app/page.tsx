@@ -94,7 +94,7 @@ export default function Home() {
               {/* Centered Orb with CTA Inside */}
               <div className="relative w-96 h-96 flex items-center justify-center">
                 <Orb
-                  hue={240}
+                  hue={180}
                   hoverIntensity={0.4}
                   rotateOnHover={true}
                   forceHoverState={false}
