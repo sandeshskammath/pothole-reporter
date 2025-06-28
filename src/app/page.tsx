@@ -8,7 +8,6 @@ import { Camera, MapPin, Users, ArrowRight, CheckCircle, Clock, Wrench, Trending
 import { ReportForm } from '@/components/report-form';
 import { PotholeMap } from '@/components/pothole-map';
 import GradientText from '@/components/ui/GradientText';
-import Noise from '@/components/ui/Noise';
 import StarBorder from '@/components/ui/StarBorder';
 import Link from 'next/link';
 
@@ -56,15 +55,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800">
-      {/* Background Effects */}
-      <Noise
-        patternSize={250}
-        patternScaleX={1}
-        patternScaleY={1}
-        patternRefreshInterval={2}
-        patternAlpha={15}
-      />
-      
       {/* Apple-inspired Hero Section */}
       <div className="relative overflow-hidden">
         {/* Glass morphism background */}
