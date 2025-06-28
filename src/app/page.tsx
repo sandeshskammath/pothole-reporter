@@ -72,7 +72,7 @@ export default function Home() {
                 <Shield className="mr-2 h-4 w-4" />
                 Community-Driven Road Safety
               </Badge>
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-normal tracking-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-normal tracking-tight">
                 Making Roads
                 <span className="block">
                   <GradientText
@@ -85,17 +85,17 @@ export default function Home() {
                   </GradientText>
                 </span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto font-light">
+              <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto font-light">
                 Join our community in creating safer roads for everyone. Report potholes instantly with your phone and help prioritize repairs in your neighborhood.
               </p>
             </div>
             
-            <div className="animate-fade-in-up animation-delay-200 flex justify-center">
+            <div className="animate-fade-in-up animation-delay-200 flex flex-col items-center gap-8">
               {/* Centered Orb with CTA Inside */}
               <div className="relative w-96 h-96 flex items-center justify-center">
                 <Orb
-                  hue={180}
-                  hoverIntensity={0.4}
+                  hue={220}
+                  hoverIntensity={0.5}
                   rotateOnHover={true}
                   forceHoverState={false}
                 />
@@ -109,8 +109,8 @@ export default function Home() {
                 </Link>
               </div>
               
-              {/* View Map Button - Commented out for now */}
-              {/* <Button 
+              {/* View Map Button */}
+              <Button 
                 variant="outline" 
                 size="lg" 
                 className="border-2 border-white/40 text-white hover:bg-white/20 hover:text-white font-semibold px-8 py-4 rounded-2xl backdrop-blur-sm transition-all duration-300 bg-white/10 h-[54px] flex items-center justify-center text-base"
@@ -118,7 +118,7 @@ export default function Home() {
               >
                 <MapPin className="mr-3 h-5 w-5" />
                 View Map
-              </Button> */}
+              </Button>
             </div>
             
             {/* Impact Stats */}
