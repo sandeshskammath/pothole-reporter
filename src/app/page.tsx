@@ -86,7 +86,7 @@ export default function Home() {
                 <span className="block">
                   <GradientText
                     colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
-                    animationSpeed={3}
+                    animationSpeed={6}
                     showBorder={false}
                     className="block"
                   >
