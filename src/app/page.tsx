@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Camera, MapPin, Users, ArrowRight, CheckCircle, Clock, Wrench, TrendingUp, Zap, Heart, Star, Shield } from 'lucide-react';
+import { Camera, MapPin, Users, ArrowRight, CheckCircle, Clock, Wrench, TrendingUp, Zap, Heart, Star, Shield, Building, BarChart3, CloudSnow } from 'lucide-react';
 import { ReportForm } from '@/components/report-form';
 import { PotholeMap } from '@/components/pothole-map';
 import GradientText from '@/components/ui/GradientText';
@@ -163,6 +163,104 @@ export default function Home() {
           </div>
           <div className="lg:w-[62%]" id="community-map">
             <PotholeMap />
+          </div>
+        </div>
+
+        {/* Phase 2 Features - Civic Engagement */}
+        <div className="relative px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+              Beyond Reporting
+            </h2>
+            <p className="text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
+              Take your civic engagement to the next level with transparency tools and community action
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Civic Action */}
+            <Link href="/civic" className="group">
+              <Card className="border border-white/10 shadow-2xl bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden hover:bg-white/15 transition-all duration-300 h-full cursor-pointer">
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Building className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-white mb-2">
+                    Civic Action
+                  </CardTitle>
+                  <CardDescription className="text-white/70">
+                    Contact representatives and connect with community organizations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <div className="flex items-center justify-center gap-2 text-sm text-blue-400 mb-4">
+                    <span>Contact Officials</span>
+                    <span>•</span>
+                    <span>Find Organizations</span>
+                  </div>
+                  <div className="flex items-center justify-center text-blue-400 group-hover:translate-x-1 transition-transform">
+                    <span className="text-sm font-medium">Take Action</span>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Transparency */}
+            <Link href="/transparency" className="group">
+              <Card className="border border-white/10 shadow-2xl bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden hover:bg-white/15 transition-all duration-300 h-full cursor-pointer">
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <BarChart3 className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-white mb-2">
+                    Transparency
+                  </CardTitle>
+                  <CardDescription className="text-white/70">
+                    Track government performance and budget spending
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <div className="flex items-center justify-center gap-2 text-sm text-green-400 mb-4">
+                    <span>Performance</span>
+                    <span>•</span>
+                    <span>Budget Data</span>
+                  </div>
+                  <div className="flex items-center justify-center text-green-400 group-hover:translate-x-1 transition-transform">
+                    <span className="text-sm font-medium">View Data</span>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Weather Insights */}
+            <Link href="/transparency/weather" className="group">
+              <Card className="border border-white/10 shadow-2xl bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden hover:bg-white/15 transition-all duration-300 h-full cursor-pointer">
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <CloudSnow className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-white mb-2">
+                    Weather Insights
+                  </CardTitle>
+                  <CardDescription className="text-white/70">
+                    AI-powered predictions and weather impact analysis
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <div className="flex items-center justify-center gap-2 text-sm text-purple-400 mb-4">
+                    <span>Predictions</span>
+                    <span>•</span>
+                    <span>Alerts</span>
+                  </div>
+                  <div className="flex items-center justify-center text-purple-400 group-hover:translate-x-1 transition-transform">
+                    <span className="text-sm font-medium">Explore AI</span>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         </div>
       
