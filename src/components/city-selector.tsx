@@ -54,7 +54,7 @@ export function CitySelector({ selectedCity, onCityChange, className }: CitySele
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-blue-600" />
                 <span className="text-sm text-blue-800">
-                  It looks like you're in <strong>{getCityConfig(suggestedCity).name}</strong>
+                  It looks like you&apos;re in <strong>{getCityConfig(suggestedCity).name}</strong>
                 </span>
               </div>
               <div className="flex gap-2">
