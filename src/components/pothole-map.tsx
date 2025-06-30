@@ -21,9 +21,9 @@ const Map = dynamic(() => import('./simple-map'), {
   ),
 });
 
-const CitySelector = dynamic(() => import('./city-selector'), {
+const CityDropdown = dynamic(() => import('./city-dropdown'), {
   ssr: false,
-  loading: () => <div className="h-8 bg-muted rounded animate-pulse" />,
+  loading: () => <div className="h-10 w-32 bg-muted rounded animate-pulse" />,
 });
 
 interface PotholeReport {
@@ -41,7 +41,6 @@ export function PotholeMap() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedCity, setSelectedCity] = useState('chicago');
-  const [showCitySelector, setShowCitySelector] = useState(false);
   const { toast } = useToast();
 
   const fetchReports = async (showRefreshToast = false) => {
@@ -110,18 +109,16 @@ export function PotholeMap() {
               Interactive map showing reported potholes in your area
             </p>
           </div>
+          
+          {/* Reorganized header: City dropdown first, then reports count, then refresh */}
           <div className="flex items-center gap-3">
+            <CityDropdown
+              selectedCity={selectedCity}
+              onCityChange={setSelectedCity}
+            />
             <Badge className="bg-blue-500/20 text-blue-300 border border-blue-400/30 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
               {reports.length} reports
             </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowCitySelector(!showCitySelector)}
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-            >
-              📍 {selectedCity === 'chicago' ? 'Chicago' : 'NYC'}
-            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -139,18 +136,6 @@ export function PotholeMap() {
         </div>
       </div>
 
-      {/* City Selector */}
-      {showCitySelector && (
-        <div className="mb-6">
-          <CitySelector 
-            selectedCity={selectedCity}
-            onCityChange={(cityId) => {
-              setSelectedCity(cityId);
-              setShowCitySelector(false);
-            }}
-          />
-        </div>
-      )}
       
       {loading ? (
         <div className="w-full h-96 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center backdrop-blur-sm">
