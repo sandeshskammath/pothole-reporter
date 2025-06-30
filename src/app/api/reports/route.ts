@@ -4,7 +4,7 @@ import { z } from 'zod';
 import DOMPurify from 'isomorphic-dompurify';
 
 // Import database functions with development fallback
-import { createReport, getAllReports, findNearbyReports } from '@/lib/db';
+import { createReport, getAllReports, findNearbyReports } from '@/lib/db-supabase';
 
 // Enhanced validation schema with strict security measures
 const createReportSchema = z.object({
