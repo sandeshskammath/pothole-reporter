@@ -21,6 +21,11 @@ const Map = dynamic(() => import('./simple-map'), {
   ),
 });
 
+const CitySelector = dynamic(() => import('./city-selector'), {
+  ssr: false,
+  loading: () => <div className="h-8 bg-muted rounded animate-pulse" />,
+});
+
 interface PotholeReport {
   id: string;
   latitude: number;
@@ -35,6 +40,8 @@ export function PotholeMap() {
   const [reports, setReports] = useState<PotholeReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('chicago');
+  const [showCitySelector, setShowCitySelector] = useState(false);
   const { toast } = useToast();
 
   const fetchReports = async (showRefreshToast = false) => {
@@ -110,6 +117,14 @@ export function PotholeMap() {
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowCitySelector(!showCitySelector)}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              📍 {selectedCity === 'chicago' ? 'Chicago' : 'NYC'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => fetchReports(true)}
               disabled={refreshing}
               className="h-10 px-4 rounded-2xl border-white/50 bg-white/20 hover:bg-white/30 text-white hover:text-white backdrop-blur-sm hover:border-white/70 transition-all duration-300"
@@ -123,6 +138,19 @@ export function PotholeMap() {
           </div>
         </div>
       </div>
+
+      {/* City Selector */}
+      {showCitySelector && (
+        <div className="mb-6">
+          <CitySelector 
+            selectedCity={selectedCity}
+            onCityChange={(cityId) => {
+              setSelectedCity(cityId);
+              setShowCitySelector(false);
+            }}
+          />
+        </div>
+      )}
       
       {loading ? (
         <div className="w-full h-96 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center backdrop-blur-sm">
@@ -132,7 +160,7 @@ export function PotholeMap() {
           </div>
         </div>
       ) : (
-        <Map reports={reports} />
+        <Map reports={reports} selectedCity={selectedCity} />
       )}
       
       {/* Map Legend - Dark Glass Theme */}

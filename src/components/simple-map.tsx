@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
+import { getCityConfig, DEFAULT_CITY } from '@/lib/cities';
 
 interface PotholeReport {
   id: string;
@@ -14,9 +15,10 @@ interface PotholeReport {
 
 interface SimpleMapProps {
   reports: PotholeReport[];
+  selectedCity?: string;
 }
 
-export default function SimpleMap({ reports }: SimpleMapProps) {
+export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: SimpleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
 
@@ -36,13 +38,21 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
           shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
         });
 
-        // Create map
-        const map = L.map(mapRef.current!).setView([37.7749, -122.4194], 13);
+        // Get city configuration
+        const cityConfig = getCityConfig(selectedCity);
+        
+        // Create map with city-specific center and zoom
+        const map = L.map(mapRef.current!).setView(cityConfig.center, cityConfig.zoom);
 
         // Add tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+
+        // Set city boundaries (max bounds to keep users focused on the city)
+        const bounds = L.latLngBounds(cityConfig.bounds);
+        map.setMaxBounds(bounds);
+        map.setMinZoom(cityConfig.zoom - 2); // Allow some zoom out but not too much
 
         // Create custom icons
         const createCustomIcon = (status: string) => {
@@ -299,7 +309,7 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
         mapInstanceRef.current = null;
       }
     };
-  }, [reports]);
+  }, [reports, selectedCity]);
 
   return (
     <div 
