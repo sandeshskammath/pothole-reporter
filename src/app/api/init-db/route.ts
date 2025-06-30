@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     // Check if database connection exists
-    if (!process.env.POSTGRES_URL) {
+    if (!process.env.POSTGRES_NEW_URL) {
       return NextResponse.json(
         { error: 'Database connection not configured' },
         { status: 500 }

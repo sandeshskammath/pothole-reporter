@@ -46,9 +46,9 @@ function hasRealDatabase(): boolean {
   }
   
   // More permissive check - if we have a real database URL, use it
-  return !!process.env.POSTGRES_URL && 
-         !process.env.POSTGRES_URL.includes('localhost') &&
-         (process.env.POSTGRES_URL.startsWith('postgres://') || process.env.POSTGRES_URL.startsWith('postgresql://'));
+  return !!process.env.POSTGRES_NEW_URL && 
+         !process.env.POSTGRES_NEW_URL.includes('localhost') &&
+         (process.env.POSTGRES_NEW_URL.startsWith('postgres://') || process.env.POSTGRES_NEW_URL.startsWith('postgresql://'));
 }
 
 // Database utility functions for the Community Pothole Reporter
