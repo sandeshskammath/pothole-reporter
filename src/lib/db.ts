@@ -134,20 +134,48 @@ export async function createReport(data: CreateReportData): Promise<PotholeRepor
 export async function getAllReports(): Promise<PotholeReport[]> {
   // In production, always use real database
   if (hasRealDatabase()) {
-    const result = await sql`
-      SELECT * FROM pothole_reports 
-      ORDER BY created_at DESC
-    `;
-    // Convert string coordinates to numbers for proper map rendering
-    return result.rows.map(row => ({
-      ...row,
-      latitude: parseFloat(row.latitude),
-      longitude: parseFloat(row.longitude)
-    })) as PotholeReport[];
+    try {
+      const result = await sql`
+        SELECT * FROM pothole_reports 
+        ORDER BY created_at DESC
+      `;
+      // Convert string coordinates to numbers and normalize status values
+      return result.rows.map(row => ({
+        ...row,
+        latitude: parseFloat(row.latitude),
+        longitude: parseFloat(row.longitude),
+        // Normalize status values to match expected format
+        status: normalizeStatus(row.status)
+      })) as PotholeReport[];
+    } catch (error) {
+      console.error('Database query failed, using mock data:', error);
+      // Fallback to mock data if database query fails
+      return [...mockReports];
+    }
   }
   
   // Development fallback
   return [...mockReports];
+}
+
+/**
+ * Normalize status values between different formats
+ */
+function normalizeStatus(status: string): 'new' | 'confirmed' | 'fixed' {
+  switch (status) {
+    case 'reported':
+      return 'new';
+    case 'in_progress':
+      return 'confirmed';
+    case 'fixed':
+      return 'fixed';
+    case 'new':
+      return 'new';
+    case 'confirmed':
+      return 'confirmed';
+    default:
+      return 'new';
+  }
 }
 
 /**
@@ -178,31 +206,44 @@ export async function findNearbyReports(
 ): Promise<PotholeReport[]> {
   // In production, always use real database
   if (hasRealDatabase()) {
-    const result = await sql`
-      SELECT *,
-             (6371000 * acos(
-               cos(radians(${latitude})) * 
-               cos(radians(latitude)) * 
-               cos(radians(longitude) - radians(${longitude})) + 
-               sin(radians(${latitude})) * 
-               sin(radians(latitude))
-             )) as distance_meters
-      FROM pothole_reports
-      WHERE (6371000 * acos(
-        cos(radians(${latitude})) * 
-        cos(radians(latitude)) * 
-        cos(radians(longitude) - radians(${longitude})) + 
-        sin(radians(${latitude})) * 
-        sin(radians(latitude))
-      )) <= ${radiusMeters}
-      ORDER BY distance_meters
-    `;
-    // Convert string coordinates to numbers for proper map rendering
-    return result.rows.map(row => ({
-      ...row,
-      latitude: parseFloat(row.latitude),
-      longitude: parseFloat(row.longitude)
-    })) as PotholeReport[];
+    try {
+      const result = await sql`
+        SELECT *,
+               (6371000 * acos(
+                 cos(radians(${latitude})) * 
+                 cos(radians(latitude)) * 
+                 cos(radians(longitude) - radians(${longitude})) + 
+                 sin(radians(${latitude})) * 
+                 sin(radians(latitude))
+               )) as distance_meters
+        FROM pothole_reports
+        WHERE (6371000 * acos(
+          cos(radians(${latitude})) * 
+          cos(radians(latitude)) * 
+          cos(radians(longitude) - radians(${longitude})) + 
+          sin(radians(${latitude})) * 
+          sin(radians(latitude))
+        )) <= ${radiusMeters}
+        ORDER BY distance_meters
+      `;
+      // Convert string coordinates to numbers and normalize status values
+      return result.rows.map(row => ({
+        ...row,
+        latitude: parseFloat(row.latitude),
+        longitude: parseFloat(row.longitude),
+        status: normalizeStatus(row.status)
+      })) as PotholeReport[];
+    } catch (error) {
+      console.error('Database query failed for nearby reports, using mock data:', error);
+      // Fallback to mock data if database query fails
+      return mockReports.filter(report => {
+        const distance = Math.sqrt(
+          Math.pow(report.latitude - latitude, 2) + 
+          Math.pow(report.longitude - longitude, 2)
+        ) * 111000; // Rough conversion to meters
+        return distance <= radiusMeters;
+      });
+    }
   }
   
   // Development fallback - simple distance calculation
