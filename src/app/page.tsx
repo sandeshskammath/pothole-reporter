@@ -49,8 +49,8 @@ export default function Home() {
     };
 
     fetchStats();
-    // Refresh stats every 30 seconds
-    const interval = setInterval(fetchStats, 30000);
+    // Refresh stats every 10 minutes to reduce bandwidth usage
+    const interval = setInterval(fetchStats, 600000);
     return () => clearInterval(interval);
   }, []);
 

@@ -70,10 +70,10 @@ export function PotholeMap() {
   useEffect(() => {
     fetchReports();
     
-    // Set up auto-refresh every 30 seconds to catch new reports
+    // Set up auto-refresh every 5 minutes to reduce bandwidth usage
     const interval = setInterval(() => {
       fetchReports(false); // Silent refresh
-    }, 30000);
+    }, 300000); // 5 minutes instead of 30 seconds
     
     // Listen for new pothole reports and refresh immediately
     const handlePotholeReported = () => {
