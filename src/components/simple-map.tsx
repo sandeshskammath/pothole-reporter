@@ -10,7 +10,8 @@ interface PotholeReport {
   photo_url: string;
   notes?: string;
   created_at: string;
-  status: 'new' | 'confirmed' | 'fixed';
+  status: 'reported' | 'in_progress' | 'fixed';
+  confirmations?: number;
 }
 
 interface SimpleMapProps {
@@ -21,14 +22,18 @@ interface SimpleMapProps {
 export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: SimpleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const heatmapLayerRef = useRef<any>(null);
+  const markerClusterRef = useRef<any>(null);
+  const currentZoomRef = useRef<number>(10);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mapRef.current) return;
 
-    // Dynamically import Leaflet to avoid SSR issues
     const initMap = async () => {
       try {
         const L = (await import('leaflet')).default;
+        const HeatmapOverlay = (await import('leaflet.heat')).default;
+        const MarkerClusterGroup = (await import('leaflet.markercluster')).default;
         
         // Fix for default markers
         delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -38,262 +43,55 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
           shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
         });
 
-        // Get city configuration
         const cityConfig = getCityConfig(selectedCity);
         
-        // Create map with city-specific center and zoom
-        const map = L.map(mapRef.current!).setView(cityConfig.center, cityConfig.zoom);
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.remove();
+        }
 
-        // Add tile layer
+        const map = L.map(mapRef.current!).setView(cityConfig.center, cityConfig.zoom);
+        mapInstanceRef.current = map;
+        currentZoomRef.current = cityConfig.zoom;
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Set city boundaries (max bounds to keep users focused on the city)
+        // Set city boundaries
         const bounds = L.latLngBounds(cityConfig.bounds);
         map.setMaxBounds(bounds);
-        map.setMinZoom(cityConfig.zoom - 2); // Allow some zoom out but not too much
+        map.setMinZoom(cityConfig.zoom - 2);
 
-        // Create custom icons
-        const createCustomIcon = (status: string) => {
-          const colors = {
-            new: '#ef4444',
-            confirmed: '#eab308', 
-            fixed: '#22c55e',
-          };
-          
-          const color = colors[status as keyof typeof colors] || colors.new;
-          
-          return L.divIcon({
-            html: `
-              <div style="
-                background-color: ${color};
-                width: 20px;
-                height: 20px;
-                border-radius: 50%;
-                border: 3px solid white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              ">
-                <div style="
-                  width: 8px;
-                  height: 8px;
-                  background-color: white;
-                  border-radius: 50%;
-                "></div>
-              </div>
-            `,
-            className: 'custom-marker',
-            iconSize: [20, 20],
-            iconAnchor: [10, 10],
-          });
-        };
-
-        // Function to get readable address from coordinates
-        const getReadableAddress = async (lat: number, lng: number): Promise<string> => {
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
-            );
-            if (response.ok) {
-              const data = await response.json();
-              if (data.display_name) {
-                // Extract meaningful parts: house_number, road, neighbourhood, city
-                const addr = data.address || {};
-                const parts = [
-                  addr.house_number,
-                  addr.road || addr.street,
-                  addr.neighbourhood || addr.suburb || addr.district,
-                  addr.city || addr.town || addr.village
-                ].filter(Boolean);
-                
-                return parts.length > 0 ? parts.join(', ') : data.display_name.split(',').slice(0, 3).join(',');
-              }
+        // Initialize marker cluster group with custom styling
+        markerClusterRef.current = new MarkerClusterGroup({
+          maxClusterRadius: 50,
+          iconCreateFunction: function(cluster: any) {
+            const count = cluster.getChildCount();
+            let className = 'marker-cluster-small';
+            
+            // Color clusters based on density
+            if (count > 15) {
+              className = 'marker-cluster-large'; // Red for high density
+            } else if (count > 8) {
+              className = 'marker-cluster-medium'; // Orange for medium density
             }
-          } catch (error) {
-            console.error('Reverse geocoding failed:', error);
+            
+            return new L.DivIcon({
+              html: `<div><span>${count}</span></div>`,
+              className: `marker-cluster ${className}`,
+              iconSize: new L.Point(40, 40)
+            });
           }
-          return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-        };
+        });
 
-        // Add markers
-        const markers: any[] = [];
-        for (const report of reports) {
-          const marker = L.marker([report.latitude, report.longitude], {
-            icon: createCustomIcon(report.status)
-          });
+        // Add zoom-based layer switching
+        map.on('zoomend', () => {
+          const zoom = map.getZoom();
+          currentZoomRef.current = zoom;
+          updateVisualization();
+        });
 
-          // Create popup with Apple-style design - single container, no nested containers
-          const createPopupContent = (address?: string) => `
-            <div style="position: relative; margin: -10px -10px 0 -10px;">
-              <img 
-                src="${report.photo_url}" 
-                alt="Pothole Report" 
-                style="
-                  width: 100%; 
-                  height: 160px; 
-                  object-fit: cover;
-                  border-radius: 12px 12px 0 0;
-                "
-                onerror="this.src='/placeholder-image.svg'"
-              />
-              <div style="
-                position: absolute;
-                top: 12px;
-                right: 12px;
-                width: 28px;
-                height: 28px;
-                background: rgba(0,0,0,0.4);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                backdrop-filter: blur(8px);
-              " onclick="window.currentMap && window.currentMap.closePopup()">
-                <span style="color: white; font-size: 16px; font-weight: 500;">×</span>
-              </div>
-            </div>
-            <div style="padding: 16px;">
-              <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
-                <div style="
-                  width: 20px;
-                  height: 20px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  margin-top: 2px;
-                ">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                  </svg>
-                </div>
-                <div style="flex: 1;">
-                  <h3 style="
-                    margin: 0;
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: #1d1d1f;
-                    line-height: 1.3;
-                    margin-bottom: 2px;
-                  ">
-                    ${address || 'Loading address...'}
-                  </h3>
-                  <p style="
-                    margin: 0;
-                    font-size: 13px;
-                    color: #86868b;
-                    font-family: 'SF Mono', Monaco, monospace;
-                  ">
-                    ${report.latitude.toFixed(6)}, ${report.longitude.toFixed(6)}
-                  </p>
-                </div>
-              </div>
-              ${report.notes ? `
-                <div style="
-                  display: flex;
-                  align-items: flex-start;
-                  gap: 8px;
-                  margin-bottom: 12px;
-                ">
-                  <div style="
-                    width: 20px;
-                    height: 20px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin-top: 2px;
-                  ">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86868b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
-                  </div>
-                  <p style="
-                    margin: 0;
-                    font-size: 14px;
-                    color: #1d1d1f;
-                    line-height: 1.4;
-                  ">
-                    ${report.notes}
-                  </p>
-                </div>
-              ` : ''}
-              <div style="
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin-bottom: 0;
-              ">
-                <div style="
-                  width: 20px;
-                  height: 20px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                ">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86868b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                </div>
-                <span style="
-                  font-size: 14px;
-                  color: #86868b;
-                  margin-right: auto;
-                ">
-                  ${new Date(report.created_at).toLocaleDateString('en-US', { 
-                    day: 'numeric', 
-                    month: 'long', 
-                    year: 'numeric' 
-                  })}
-                </span>
-                <span style="
-                  padding: 4px 10px;
-                  border-radius: 12px;
-                  font-size: 12px;
-                  font-weight: 600;
-                  text-transform: capitalize;
-                  ${report.status === 'new' ? 'background-color: #ffebee; color: #d32f2f;' :
-                    report.status === 'confirmed' ? 'background-color: #fff8e1; color: #f57c00;' :
-                    'background-color: #e8f5e8; color: #2e7d32;'}
-                ">
-                  ${report.status}
-                </span>
-              </div>
-            </div>
-          `;
-
-          // Set initial popup content with explicit HTML options
-          marker.bindPopup(createPopupContent(), {
-            maxWidth: 320,
-            minWidth: 280,
-            className: 'custom-popup',
-            closeButton: false // Hide Leaflet's default close button
-          });
-          
-          // When popup opens, fetch and update address
-          marker.on('popupopen', async () => {
-            const address = await getReadableAddress(report.latitude, report.longitude);
-            marker.setPopupContent(createPopupContent(address));
-          });
-
-          marker.addTo(map);
-          markers.push(marker);
-        }
-
-        // Fit bounds if we have markers
-        if (markers.length > 0) {
-          const group = new L.FeatureGroup(markers);
-          map.fitBounds(group.getBounds().pad(0.1));
-        }
-
-        mapInstanceRef.current = map;
-        // Store map reference globally for close button access
+        // Store map reference globally
         (window as any).currentMap = map;
       } catch (error) {
         console.error('Error initializing map:', error);
@@ -302,20 +100,175 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
 
     initMap();
 
-    // Cleanup
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, [reports, selectedCity]);
+  }, [selectedCity]);
+
+  const updateVisualization = async () => {
+    if (!mapInstanceRef.current || typeof window === 'undefined') return;
+
+    const L = window.L || (await import('leaflet')).default;
+    const HeatmapOverlay = (await import('leaflet.heat')).default;
+    const zoom = currentZoomRef.current;
+
+    // Clear existing layers
+    if (heatmapLayerRef.current) {
+      mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
+      heatmapLayerRef.current = null;
+    }
+    if (markerClusterRef.current) {
+      mapInstanceRef.current.removeLayer(markerClusterRef.current);
+      markerClusterRef.current.clearLayers();
+    }
+
+    if (zoom <= 11) {
+      // Show heatmap for zoomed-out view (city/regional level)
+      const heatmapData = reports.map(report => [
+        report.latitude,
+        report.longitude,
+        Math.min((report.confirmations || 1) * 0.8, 1.0) // Intensity based on confirmations
+      ]);
+
+      if (heatmapData.length > 0) {
+        heatmapLayerRef.current = L.heatLayer(heatmapData, {
+          radius: 25,
+          blur: 15,
+          maxZoom: 17,
+          gradient: {
+            0.2: '#3b82f6', // Blue for low density
+            0.4: '#10b981', // Green for low-medium
+            0.6: '#f59e0b', // Yellow for medium
+            0.8: '#f97316', // Orange for medium-high
+            1.0: '#ef4444'  // Red for high density
+          }
+        }).addTo(mapInstanceRef.current);
+      }
+
+    } else if (zoom <= 14) {
+      // Show marker clusters for neighborhood view
+      reports.forEach(report => {
+        const getMarkerColor = (status: string) => {
+          switch (status) {
+            case 'reported': return '#ef4444';
+            case 'in_progress': return '#f97316';
+            case 'fixed': return '#22c55e';
+            default: return '#6b7280';
+          }
+        };
+
+        const marker = L.circleMarker([report.latitude, report.longitude], {
+          radius: 6,
+          fillColor: getMarkerColor(report.status),
+          color: '#ffffff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.8
+        });
+
+        const confirmationText = report.confirmations ? ` (${report.confirmations} confirmations)` : '';
+        const popupContent = `
+          <div class="p-3 min-w-[200px]">
+            <div class="font-semibold mb-2 text-sm">Status: ${report.status.replace('_', ' ').toUpperCase()}</div>
+            ${report.notes ? `<div class="text-sm text-gray-600 mb-2 leading-relaxed">${report.notes}</div>` : ''}
+            <div class="text-xs text-gray-500 border-t pt-2">
+              <div>Reported: ${new Date(report.created_at).toLocaleDateString()}</div>
+              ${confirmationText ? `<div>Community Support${confirmationText}</div>` : ''}
+            </div>
+          </div>
+        `;
+
+        marker.bindPopup(popupContent);
+        markerClusterRef.current.addLayer(marker);
+      });
+
+      mapInstanceRef.current.addLayer(markerClusterRef.current);
+
+    } else {
+      // Show individual pins for street-level view
+      reports.forEach(report => {
+        const getMarkerColor = (status: string) => {
+          switch (status) {
+            case 'reported': return '#ef4444';
+            case 'in_progress': return '#f97316';
+            case 'fixed': return '#22c55e';
+            default: return '#6b7280';
+          }
+        };
+
+        const marker = L.circleMarker([report.latitude, report.longitude], {
+          radius: 8,
+          fillColor: getMarkerColor(report.status),
+          color: '#ffffff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.9
+        });
+
+        const confirmationText = report.confirmations ? ` (${report.confirmations} confirmations)` : '';
+        const popupContent = `
+          <div class="p-3 min-w-[200px]">
+            <div class="font-semibold mb-2">Status: ${report.status.replace('_', ' ').toUpperCase()}</div>
+            ${report.notes ? `<div class="text-sm text-gray-600 mb-3 leading-relaxed">${report.notes}</div>` : ''}
+            <div class="text-xs text-gray-500 border-t pt-2">
+              <div>Reported: ${new Date(report.created_at).toLocaleDateString()}</div>
+              ${confirmationText ? `<div>Community Support${confirmationText}</div>` : ''}
+            </div>
+          </div>
+        `;
+
+        marker.bindPopup(popupContent);
+        marker.addTo(mapInstanceRef.current);
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    updateVisualization();
+  }, [reports]);
 
   return (
-    <div 
-      ref={mapRef} 
-      className="w-full h-96 rounded-lg border"
-      style={{ minHeight: '384px' }}
-    />
+    <>
+      <style jsx global>{`
+        .marker-cluster-small {
+          background-color: rgba(59, 130, 246, 0.6);
+          border: 2px solid rgba(59, 130, 246, 0.8);
+        }
+        .marker-cluster-medium {
+          background-color: rgba(249, 115, 22, 0.6);
+          border: 2px solid rgba(249, 115, 22, 0.8);
+        }
+        .marker-cluster-large {
+          background-color: rgba(239, 68, 68, 0.6);
+          border: 2px solid rgba(239, 68, 68, 0.8);
+        }
+        .marker-cluster {
+          border-radius: 50%;
+          text-align: center;
+          font-size: 12px;
+          font-weight: bold;
+          color: white;
+        }
+        .marker-cluster div {
+          width: 40px;
+          height: 40px;
+          margin-left: 5px;
+          margin-top: 5px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .leaflet-popup-content-wrapper {
+          border-radius: 8px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+      `}</style>
+      <div ref={mapRef} className="w-full h-96 rounded-3xl border border-white/10 overflow-hidden" />
+    </>
   );
 }

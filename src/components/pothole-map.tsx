@@ -149,18 +149,23 @@ export function PotholeMap() {
       )}
       
       {/* Map Legend - Dark Glass Theme */}
-      <div className="mt-6 flex flex-wrap gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
-          <span className="text-white/80 font-medium">Reported</span>
+      <div className="mt-6 space-y-4">
+        <div className="flex flex-wrap gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
+            <span className="text-white/80 font-medium">Reported</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-orange-500 rounded-full shadow-sm"></div>
+            <span className="text-white/80 font-medium">In Progress</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full shadow-sm"></div>
+            <span className="text-white/80 font-medium">Fixed</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-orange-500 rounded-full shadow-sm"></div>
-          <span className="text-white/80 font-medium">In Progress</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-green-500 rounded-full shadow-sm"></div>
-          <span className="text-white/80 font-medium">Fixed</span>
+        <div className="text-xs text-white/60 leading-relaxed">
+          <strong>Zoom levels:</strong> Heatmap (city view) → Clusters (neighborhood) → Individual pins (street level)
         </div>
       </div>
     </div>
