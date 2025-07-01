@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -33,7 +33,8 @@ interface PotholeReport {
   photo_url: string;
   notes?: string;
   created_at: string;
-  status: 'new' | 'confirmed' | 'fixed';
+  status: 'reported' | 'in_progress' | 'fixed';
+  confirmations?: number;
 }
 
 export function PotholeMap() {
@@ -43,7 +44,7 @@ export function PotholeMap() {
   const [selectedCity, setSelectedCity] = useState('chicago');
   const { toast } = useToast();
 
-  const fetchReports = async (showRefreshToast = false) => {
+  const fetchReports = useCallback(async (showRefreshToast = false) => {
     try {
       if (showRefreshToast) setRefreshing(true);
       
@@ -71,7 +72,7 @@ export function PotholeMap() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchReports();
@@ -92,7 +93,7 @@ export function PotholeMap() {
       clearInterval(interval);
       window.removeEventListener('potholeReported', handlePotholeReported);
     };
-  }, []);
+  }, [fetchReports]);
 
   return (
     <div className="w-full bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl overflow-hidden p-6">

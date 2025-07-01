@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { getCityConfig, DEFAULT_CITY } from '@/lib/cities';
 
 interface PotholeReport {
@@ -26,93 +26,11 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
   const markerClusterRef = useRef<any>(null);
   const currentZoomRef = useRef<number>(10);
 
-  useEffect(() => {
-    if (typeof window === 'undefined' || !mapRef.current) return;
-
-    const initMap = async () => {
-      try {
-        const L = (await import('leaflet')).default;
-        const HeatmapOverlay = (await import('leaflet.heat')).default;
-        const MarkerClusterGroup = (await import('leaflet.markercluster')).default;
-        
-        // Fix for default markers
-        delete (L.Icon.Default.prototype as any)._getIconUrl;
-        L.Icon.Default.mergeOptions({
-          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-        });
-
-        const cityConfig = getCityConfig(selectedCity);
-        
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.remove();
-        }
-
-        const map = L.map(mapRef.current!).setView(cityConfig.center, cityConfig.zoom);
-        mapInstanceRef.current = map;
-        currentZoomRef.current = cityConfig.zoom;
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Set city boundaries
-        const bounds = L.latLngBounds(cityConfig.bounds);
-        map.setMaxBounds(bounds);
-        map.setMinZoom(cityConfig.zoom - 2);
-
-        // Initialize marker cluster group with custom styling
-        markerClusterRef.current = new MarkerClusterGroup({
-          maxClusterRadius: 50,
-          iconCreateFunction: function(cluster: any) {
-            const count = cluster.getChildCount();
-            let className = 'marker-cluster-small';
-            
-            // Color clusters based on density
-            if (count > 15) {
-              className = 'marker-cluster-large'; // Red for high density
-            } else if (count > 8) {
-              className = 'marker-cluster-medium'; // Orange for medium density
-            }
-            
-            return new L.DivIcon({
-              html: `<div><span>${count}</span></div>`,
-              className: `marker-cluster ${className}`,
-              iconSize: new L.Point(40, 40)
-            });
-          }
-        });
-
-        // Add zoom-based layer switching
-        map.on('zoomend', () => {
-          const zoom = map.getZoom();
-          currentZoomRef.current = zoom;
-          updateVisualization();
-        });
-
-        // Store map reference globally
-        (window as any).currentMap = map;
-      } catch (error) {
-        console.error('Error initializing map:', error);
-      }
-    };
-
-    initMap();
-
-    return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
-  }, [selectedCity]);
-
-  const updateVisualization = async () => {
+  const updateVisualization = useCallback(async () => {
     if (!mapInstanceRef.current || typeof window === 'undefined') return;
 
     const L = window.L || (await import('leaflet')).default;
-    const HeatmapOverlay = (await import('leaflet.heat')).default;
+    await import('leaflet.heat');
     const zoom = currentZoomRef.current;
 
     // Clear existing layers
@@ -134,7 +52,7 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
       ]);
 
       if (heatmapData.length > 0) {
-        heatmapLayerRef.current = L.heatLayer(heatmapData, {
+        heatmapLayerRef.current = (L as any).heatLayer(heatmapData, {
           radius: 25,
           blur: 15,
           maxZoom: 17,
@@ -224,12 +142,94 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
         marker.addTo(mapInstanceRef.current);
       });
     }
-  };
+  }, [reports]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !mapRef.current) return;
+
+    const initMap = async () => {
+      try {
+        const L = (await import('leaflet')).default;
+        await import('leaflet.heat');
+        const MarkerClusterGroup = (await import('leaflet.markercluster')).default;
+        
+        // Fix for default markers
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        });
+
+        const cityConfig = getCityConfig(selectedCity);
+        
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.remove();
+        }
+
+        const map = L.map(mapRef.current!).setView(cityConfig.center, cityConfig.zoom);
+        mapInstanceRef.current = map;
+        currentZoomRef.current = cityConfig.zoom;
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Set city boundaries
+        const bounds = L.latLngBounds(cityConfig.bounds);
+        map.setMaxBounds(bounds);
+        map.setMinZoom(cityConfig.zoom - 2);
+
+        // Initialize marker cluster group with custom styling
+        markerClusterRef.current = new MarkerClusterGroup({
+          maxClusterRadius: 50,
+          iconCreateFunction: function(cluster: any) {
+            const count = cluster.getChildCount();
+            let className = 'marker-cluster-small';
+            
+            // Color clusters based on density
+            if (count > 15) {
+              className = 'marker-cluster-large'; // Red for high density
+            } else if (count > 8) {
+              className = 'marker-cluster-medium'; // Orange for medium density
+            }
+            
+            return new L.DivIcon({
+              html: `<div><span>${count}</span></div>`,
+              className: `marker-cluster ${className}`,
+              iconSize: new L.Point(40, 40)
+            });
+          }
+        });
+
+        // Add zoom-based layer switching
+        map.on('zoomend', () => {
+          const zoom = map.getZoom();
+          currentZoomRef.current = zoom;
+          updateVisualization();
+        });
+
+        // Store map reference globally
+        (window as any).currentMap = map;
+      } catch (error) {
+        console.error('Error initializing map:', error);
+      }
+    };
+
+    initMap();
+
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [selectedCity, updateVisualization]);
 
   useEffect(() => {
     if (!mapInstanceRef.current) return;
     updateVisualization();
-  }, [reports]);
+  }, [reports, updateVisualization]);
 
   return (
     <>
