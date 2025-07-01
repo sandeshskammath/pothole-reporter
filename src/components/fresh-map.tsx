@@ -46,7 +46,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
         }
 
         // Create map centered on Chicago
-        const map = L.map(mapRef.current, {
+        const map = L.map(mapRef.current!, {
           center: [41.8781, -87.6298], // Chicago coordinates
           zoom: 11,
           zoomControl: true
