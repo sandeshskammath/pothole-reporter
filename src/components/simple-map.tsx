@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { getCityConfig, DEFAULT_CITY } from '@/lib/cities';
-import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
-import 'leaflet-defaulticon-compatibility';
 
 interface PotholeReport {
   id: string;
@@ -27,6 +25,8 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
   const heatmapLayerRef = useRef<any>(null);
   const markerClusterRef = useRef<any>(null);
   const currentZoomRef = useRef<number>(10);
+  const [mapInitialized, setMapInitialized] = useState(false);
+  const [L, setL] = useState<any>(null);
 
   // Debug props changes
   useEffect(() => {
@@ -34,146 +34,231 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
       reportCount: reports.length, 
       selectedCity,
       sampleReport: reports[0],
-      mapInitialized: !!mapInstanceRef.current 
+      mapInitialized 
     });
-  }, [reports, selectedCity]);
+  }, [reports, selectedCity, mapInitialized]);
+
+  // Validate coordinates helper
+  const validateCoordinates = (lat: number, lng: number) => {
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      console.warn('Invalid coordinates:', { lat, lng });
+      return false;
+    }
+    return true;
+  };
 
   const updateVisualization = useCallback(async () => {
     try {
-      if (!mapInstanceRef.current || typeof window === 'undefined') {
+      if (!mapInstanceRef.current || !L || !mapInitialized) {
         console.log('⚠️ updateVisualization skipped:', { 
           mapExists: !!mapInstanceRef.current, 
-          windowDefined: typeof window !== 'undefined' 
+          leafletLoaded: !!L,
+          mapInitialized 
         });
         return;
       }
 
       console.log('🔄 Starting updateVisualization...');
-      const L = window.L || (await import('leaflet')).default;
-      await import('leaflet.heat');
       const zoom = currentZoomRef.current;
 
-      // Debug logging
+      // Validate reports data
+      const validReports = reports.filter(report => 
+        validateCoordinates(report.latitude, report.longitude)
+      );
+
       console.log('📊 updateVisualization called with:', { 
-        reportsCount: reports.length, 
-        zoom, 
-        LdefinedOnWindow: !!window.L,
-        firstReport: reports[0]
+        totalReports: reports.length,
+        validReports: validReports.length,
+        zoom,
+        firstValidReport: validReports[0]
       });
 
-      // Clear existing layers
-    if (heatmapLayerRef.current) {
-      mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
-      heatmapLayerRef.current = null;
-    }
-    if (markerClusterRef.current) {
-      mapInstanceRef.current.removeLayer(markerClusterRef.current);
-      markerClusterRef.current.clearLayers();
-    }
-
-    if (zoom <= 11) {
-      // Show heatmap for zoomed-out view (city/regional level)
-      const heatmapData = reports.map(report => [
-        report.latitude,
-        report.longitude,
-        Math.min((report.confirmations || 1) * 0.8, 1.0) // Intensity based on confirmations
-      ]);
-
-      if (heatmapData.length > 0) {
-        heatmapLayerRef.current = (L as any).heatLayer(heatmapData, {
-          radius: 25,
-          blur: 15,
-          maxZoom: 17,
-          gradient: {
-            0.2: '#3b82f6', // Blue for low density
-            0.4: '#10b981', // Green for low-medium
-            0.6: '#f59e0b', // Yellow for medium
-            0.8: '#f97316', // Orange for medium-high
-            1.0: '#ef4444'  // Red for high density
-          }
-        }).addTo(mapInstanceRef.current);
+      if (validReports.length === 0) {
+        console.warn('No valid reports to display');
+        return;
       }
 
-    } else if (zoom <= 14) {
-      // Show marker clusters for neighborhood view
-      reports.forEach(report => {
-        const getMarkerColor = (status: string) => {
-          switch (status) {
-            case 'reported': return '#ef4444';
-            case 'in_progress': return '#f97316';
-            case 'fixed': return '#22c55e';
-            default: return '#6b7280';
-          }
-        };
+      // Clear existing layers
+      if (heatmapLayerRef.current) {
+        mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
+        heatmapLayerRef.current = null;
+      }
+      if (markerClusterRef.current) {
+        mapInstanceRef.current.removeLayer(markerClusterRef.current);
+        markerClusterRef.current = null;
+      }
 
-        const marker = L.circleMarker([report.latitude, report.longitude], {
-          radius: 6,
-          fillColor: getMarkerColor(report.status),
-          color: '#ffffff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.8
-        });
-
-        const confirmationText = report.confirmations ? ` (${report.confirmations} confirmations)` : '';
-        const popupContent = `
-          <div class="p-3 min-w-[200px]">
-            <div class="font-semibold mb-2 text-sm">Status: ${report.status.replace('_', ' ').toUpperCase()}</div>
-            ${report.notes ? `<div class="text-sm text-gray-600 mb-2 leading-relaxed">${report.notes}</div>` : ''}
-            <div class="text-xs text-gray-500 border-t pt-2">
-              <div>Reported: ${new Date(report.created_at).toLocaleDateString()}</div>
-              ${confirmationText ? `<div>Community Support${confirmationText}</div>` : ''}
-            </div>
-          </div>
-        `;
-
-        marker.bindPopup(popupContent);
-        markerClusterRef.current.addLayer(marker);
+      // Clear all existing markers/layers
+      mapInstanceRef.current.eachLayer((layer: any) => {
+        if (layer !== mapInstanceRef.current._tileLayer) {
+          mapInstanceRef.current.removeLayer(layer);
+        }
       });
 
-      mapInstanceRef.current.addLayer(markerClusterRef.current);
+      console.log('🧹 Cleared existing layers');
 
-    } else {
-      // Show individual pins for street-level view
-      reports.forEach(report => {
-        const getMarkerColor = (status: string) => {
-          switch (status) {
-            case 'reported': return '#ef4444';
-            case 'in_progress': return '#f97316';
-            case 'fixed': return '#22c55e';
-            default: return '#6b7280';
+      if (zoom <= 11) {
+        // Heatmap for zoomed-out view
+        try {
+          const heatmapData = validReports.map(report => [
+            report.latitude,
+            report.longitude,
+            Math.min((report.confirmations || 1) * 0.8, 1.0)
+          ]);
+
+          console.log('🔥 Creating heatmap with data:', heatmapData.slice(0, 3));
+
+          if (L.heatLayer && heatmapData.length > 0) {
+            heatmapLayerRef.current = L.heatLayer(heatmapData, {
+              radius: 25,
+              blur: 15,
+              maxZoom: 17,
+              gradient: {
+                0.2: '#3b82f6',
+                0.4: '#10b981', 
+                0.6: '#f59e0b',
+                0.8: '#f97316',
+                1.0: '#ef4444'
+              }
+            });
+
+            heatmapLayerRef.current.addTo(mapInstanceRef.current);
+            console.log('✅ Heatmap layer added successfully');
+          } else {
+            console.error('❌ L.heatLayer not available or no data');
           }
-        };
+        } catch (heatError) {
+          console.error('💥 Heatmap creation error:', heatError);
+        }
 
-        const marker = L.circleMarker([report.latitude, report.longitude], {
-          radius: 8,
-          fillColor: getMarkerColor(report.status),
-          color: '#ffffff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.9
-        });
+      } else if (zoom <= 14) {
+        // Marker clusters for neighborhood view
+        try {
+          if (L.markerClusterGroup) {
+            markerClusterRef.current = L.markerClusterGroup({
+              maxClusterRadius: 50,
+              disableClusteringAtZoom: 15,
+              iconCreateFunction: function(cluster: any) {
+                const count = cluster.getChildCount();
+                let className = 'marker-cluster-small';
+                
+                if (count > 15) {
+                  className = 'marker-cluster-large';
+                } else if (count > 8) {
+                  className = 'marker-cluster-medium';
+                }
+                
+                return new L.DivIcon({
+                  html: `<div><span>${count}</span></div>`,
+                  className: `marker-cluster ${className}`,
+                  iconSize: new L.Point(40, 40)
+                });
+              }
+            });
 
-        const confirmationText = report.confirmations ? ` (${report.confirmations} confirmations)` : '';
-        const popupContent = `
-          <div class="p-3 min-w-[200px]">
-            <div class="font-semibold mb-2">Status: ${report.status.replace('_', ' ').toUpperCase()}</div>
-            ${report.notes ? `<div class="text-sm text-gray-600 mb-3 leading-relaxed">${report.notes}</div>` : ''}
-            <div class="text-xs text-gray-500 border-t pt-2">
-              <div>Reported: ${new Date(report.created_at).toLocaleDateString()}</div>
-              ${confirmationText ? `<div>Community Support${confirmationText}</div>` : ''}
-            </div>
-          </div>
-        `;
+            validReports.forEach((report, index) => {
+              const getMarkerColor = (status: string) => {
+                switch (status) {
+                  case 'reported': return '#ef4444';
+                  case 'in_progress': return '#f97316';
+                  case 'fixed': return '#22c55e';
+                  default: return '#6b7280';
+                }
+              };
 
-        marker.bindPopup(popupContent);
-        marker.addTo(mapInstanceRef.current);
-      });
-    }
+              const marker = L.circleMarker([report.latitude, report.longitude], {
+                radius: 6,
+                fillColor: getMarkerColor(report.status),
+                color: '#ffffff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+              });
+
+              const confirmationText = report.confirmations ? ` (${report.confirmations} confirmations)` : '';
+              const popupContent = `
+                <div class="p-3 min-w-[200px]">
+                  <div class="font-semibold mb-2 text-sm">Status: ${report.status.replace('_', ' ').toUpperCase()}</div>
+                  ${report.notes ? `<div class="text-sm text-gray-600 mb-2 leading-relaxed">${report.notes}</div>` : ''}
+                  <div class="text-xs text-gray-500 border-t pt-2">
+                    <div>Reported: ${new Date(report.created_at).toLocaleDateString()}</div>
+                    ${confirmationText ? `<div>Community Support${confirmationText}</div>` : ''}
+                  </div>
+                </div>
+              `;
+
+              marker.bindPopup(popupContent);
+              markerClusterRef.current.addLayer(marker);
+              console.log(`➕ Added cluster marker ${index + 1}/${validReports.length}`);
+            });
+
+            mapInstanceRef.current.addLayer(markerClusterRef.current);
+            console.log('✅ Marker cluster layer added successfully');
+          } else {
+            console.error('❌ L.markerClusterGroup not available');
+          }
+        } catch (clusterError) {
+          console.error('💥 Marker cluster creation error:', clusterError);
+        }
+
+      } else {
+        // Individual pins for street-level view
+        try {
+          let addedMarkers = 0;
+          validReports.forEach((report, index) => {
+            const getMarkerColor = (status: string) => {
+              switch (status) {
+                case 'reported': return '#ef4444';
+                case 'in_progress': return '#f97316';
+                case 'fixed': return '#22c55e';
+                default: return '#6b7280';
+              }
+            };
+
+            const marker = L.circleMarker([report.latitude, report.longitude], {
+              radius: 8,
+              fillColor: getMarkerColor(report.status),
+              color: '#ffffff',
+              weight: 2,
+              opacity: 1,
+              fillOpacity: 0.9
+            });
+
+            const confirmationText = report.confirmations ? ` (${report.confirmations} confirmations)` : '';
+            const popupContent = `
+              <div class="p-3 min-w-[200px]">
+                <div class="font-semibold mb-2">Status: ${report.status.replace('_', ' ').toUpperCase()}</div>
+                ${report.notes ? `<div class="text-sm text-gray-600 mb-3 leading-relaxed">${report.notes}</div>` : ''}
+                <div class="text-xs text-gray-500 border-t pt-2">
+                  <div>Reported: ${new Date(report.created_at).toLocaleDateString()}</div>
+                  ${confirmationText ? `<div>Community Support${confirmationText}</div>` : ''}
+                </div>
+              </div>
+            `;
+
+            marker.bindPopup(popupContent);
+            marker.addTo(mapInstanceRef.current);
+            addedMarkers++;
+            console.log(`➕ Added individual marker ${index + 1}/${validReports.length}`);
+          });
+          console.log(`✅ Added ${addedMarkers} individual markers successfully`);
+        } catch (markerError) {
+          console.error('💥 Individual marker creation error:', markerError);
+        }
+      }
+
+      // Force map refresh
+      setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+          console.log('🔄 Map size invalidated');
+        }
+      }, 100);
+
     } catch (error) {
       console.error('💥 updateVisualization error:', error);
     }
-  }, [reports]);
+  }, [reports, L, mapInitialized]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mapRef.current) return;
@@ -181,18 +266,27 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
     const initMap = async () => {
       try {
         console.log('🚀 Initializing map...');
-        const L = (await import('leaflet')).default;
+        
+        // Load Leaflet dynamically
+        const leaflet = (await import('leaflet')).default;
+        
+        // Load heatmap plugin
         await import('leaflet.heat');
+        
+        // Load marker cluster plugin  
         const MarkerClusterGroup = (await import('leaflet.markercluster')).default;
+        
+        setL(leaflet);
         console.log('📦 Leaflet modules loaded successfully');
         
-        // Fix for default markers
-        delete (L.Icon.Default.prototype as any)._getIconUrl;
-        L.Icon.Default.mergeOptions({
+        // Fix marker icons
+        delete (leaflet.Icon.Default.prototype as any)._getIconUrl;
+        leaflet.Icon.Default.mergeOptions({
           iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
           iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
           shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
         });
+        console.log('🔧 Marker icons fixed');
 
         const cityConfig = getCityConfig(selectedCity);
         
@@ -200,53 +294,49 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
           mapInstanceRef.current.remove();
         }
 
-        const map = L.map(mapRef.current!).setView(cityConfig.center, cityConfig.zoom);
+        const map = leaflet.map(mapRef.current!, {
+          center: cityConfig.center,
+          zoom: cityConfig.zoom,
+          zoomControl: true,
+          attributionControl: true
+        });
+        
         mapInstanceRef.current = map;
         currentZoomRef.current = cityConfig.zoom;
-        console.log('🗺️ Map instance created successfully', { center: cityConfig.center, zoom: cityConfig.zoom });
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-        console.log('🎯 Map tiles added successfully');
-
-        // Set city boundaries (temporarily disabled to show all data)
-        // const bounds = L.latLngBounds(cityConfig.bounds);
-        // map.setMaxBounds(bounds);
-        // map.setMinZoom(cityConfig.zoom - 2);
-
-        // Initialize marker cluster group with custom styling
-        markerClusterRef.current = new MarkerClusterGroup({
-          maxClusterRadius: 50,
-          iconCreateFunction: function(cluster: any) {
-            const count = cluster.getChildCount();
-            let className = 'marker-cluster-small';
-            
-            // Color clusters based on density
-            if (count > 15) {
-              className = 'marker-cluster-large'; // Red for high density
-            } else if (count > 8) {
-              className = 'marker-cluster-medium'; // Orange for medium density
-            }
-            
-            return new L.DivIcon({
-              html: `<div><span>${count}</span></div>`,
-              className: `marker-cluster ${className}`,
-              iconSize: new L.Point(40, 40)
-            });
-          }
+        console.log('🗺️ Map instance created successfully', { 
+          center: cityConfig.center, 
+          zoom: cityConfig.zoom 
         });
 
-        // Add zoom-based layer switching
+        const tileLayer = leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors',
+          maxZoom: 18
+        });
+        
+        tileLayer.addTo(map);
+        map._tileLayer = tileLayer; // Store reference for layer clearing
+        console.log('🎯 Map tiles added successfully');
+
+        // Add zoom event handler
         map.on('zoomend', () => {
           const zoom = map.getZoom();
           currentZoomRef.current = zoom;
+          console.log('🔍 Zoom changed to:', zoom);
           updateVisualization();
         });
 
-        // Store map reference globally
+        // Store map reference globally for debugging
         (window as any).currentMap = map;
+        (window as any).leaflet = leaflet;
+        
+        setMapInitialized(true);
         console.log('✅ Map initialization completed successfully');
+        
+        // Initial visualization
+        setTimeout(() => {
+          updateVisualization();
+        }, 100);
+        
       } catch (error) {
         console.error('💥 Error initializing map:', error);
         console.error('Error details:', {
@@ -265,14 +355,18 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
+        setMapInitialized(false);
       }
     };
-  }, [selectedCity, updateVisualization]);
+  }, [selectedCity]);
 
+  // Update visualization when reports change
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
-    updateVisualization();
-  }, [reports, updateVisualization]);
+    if (mapInitialized && reports.length > 0) {
+      console.log('📈 Reports changed, updating visualization...');
+      updateVisualization();
+    }
+  }, [reports, updateVisualization, mapInitialized]);
 
   return (
     <>
@@ -310,8 +404,34 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
           border-radius: 8px;
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
+        
+        /* Ensure map container has proper dimensions */
+        .map-container {
+          height: 24rem; /* 384px / h-96 */
+          width: 100%;
+          border-radius: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          overflow: hidden;
+        }
+        
+        .leaflet-container {
+          height: 100% !important;
+          width: 100% !important;
+          border-radius: 1.5rem;
+        }
       `}</style>
-      <div ref={mapRef} className="w-full h-96 rounded-3xl border border-white/10 overflow-hidden" />
+      <div 
+        ref={mapRef} 
+        className="map-container"
+        style={{ 
+          height: '384px', 
+          width: '100%',
+          minHeight: '384px',
+          borderRadius: '1.5rem',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          overflow: 'hidden'
+        }}
+      />
     </>
   );
 }
