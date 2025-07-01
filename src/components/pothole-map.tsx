@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { MapPin, RefreshCw, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Dynamically import map to avoid SSR issues
-const Map = dynamic(() => import('./simple-map'), {
+// Dynamically import fresh map to avoid SSR issues
+const Map = dynamic(() => import('./fresh-map'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-96 bg-muted rounded-lg flex items-center justify-center">
