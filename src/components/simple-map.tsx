@@ -90,7 +90,7 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
 
       // Clear all existing markers/layers
       mapInstanceRef.current.eachLayer((layer: any) => {
-        if (layer !== mapInstanceRef.current._tileLayer) {
+        if (layer !== (mapInstanceRef.current as any)._tileLayer) {
           mapInstanceRef.current.removeLayer(layer);
         }
       });
@@ -314,7 +314,7 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
         });
         
         tileLayer.addTo(map);
-        map._tileLayer = tileLayer; // Store reference for layer clearing
+        (map as any)._tileLayer = tileLayer; // Store reference for layer clearing
         console.log('🎯 Map tiles added successfully');
 
         // Add zoom event handler
