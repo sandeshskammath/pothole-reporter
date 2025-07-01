@@ -170,6 +170,9 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
         marker.addTo(mapInstanceRef.current);
       });
     }
+    } catch (error) {
+      console.error('💥 updateVisualization error:', error);
+    }
   }, [reports]);
 
   useEffect(() => {
