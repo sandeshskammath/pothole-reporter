@@ -106,9 +106,16 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
             Math.min((report.confirmations || 1) * 0.8, 1.0)
           ]);
 
-          console.log('🔥 Creating heatmap with data:', heatmapData.slice(0, 3));
+          console.log('🔥 HEATMAP DEBUG START');
+          console.log('🔥 validReports count:', validReports.length);
+          console.log('🔥 Raw heatmap data:', JSON.stringify(heatmapData.slice(0, 3), null, 2));
+          console.log('🔥 L.heatLayer exists:', !!L.heatLayer);
+          console.log('🔥 Current zoom:', zoom);
 
           if (L.heatLayer && heatmapData.length > 0) {
+            console.log('🔥 Creating heatmap layer...');
+            
+            // Create heatmap layer
             heatmapLayerRef.current = L.heatLayer(heatmapData, {
               radius: 25,
               blur: 15,
@@ -122,13 +129,27 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
               }
             });
 
+            console.log('🔥 Heatmap layer created:', !!heatmapLayerRef.current);
+            
+            // Add to map
             heatmapLayerRef.current.addTo(mapInstanceRef.current);
-            console.log('✅ Heatmap layer added successfully');
+            console.log('✅ Heatmap layer added to map successfully');
+            
+            // Verify layer is on map
+            const layersOnMap = [];
+            mapInstanceRef.current.eachLayer((layer: any) => {
+              layersOnMap.push(layer.constructor.name);
+            });
+            console.log('🔥 All layers on map:', layersOnMap);
+            
           } else {
             console.error('❌ L.heatLayer not available or no data');
+            console.error('❌ L.heatLayer exists:', !!L.heatLayer);
+            console.error('❌ heatmapData.length:', heatmapData.length);
           }
         } catch (heatError) {
           console.error('💥 Heatmap creation error:', heatError);
+          console.error('💥 Error stack:', heatError.stack);
         }
 
       } else if (zoom <= 14) {
@@ -332,9 +353,35 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
         setMapInitialized(true);
         console.log('✅ Map initialization completed successfully');
         
-        // Initial visualization
+        // Initial visualization with fallback
         setTimeout(() => {
           updateVisualization();
+          
+          // Fallback: If no layers are visible after 2 seconds, force show simple markers
+          setTimeout(() => {
+            let visibleLayers = 0;
+            mapInstanceRef.current.eachLayer((layer: any) => {
+              if (layer.constructor.name !== 'TileLayer') {
+                visibleLayers++;
+              }
+            });
+            
+            if (visibleLayers === 0 && reports.length > 0) {
+              console.log('🚨 FALLBACK: No layers visible, adding simple markers');
+              reports.forEach(report => {
+                if (validateCoordinates(report.latitude, report.longitude)) {
+                  const marker = leaflet.circleMarker([report.latitude, report.longitude], {
+                    radius: 8,
+                    fillColor: '#ef4444',
+                    color: '#ffffff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                  }).addTo(mapInstanceRef.current);
+                }
+              });
+            }
+          }, 2000);
         }, 100);
         
       } catch (error) {
