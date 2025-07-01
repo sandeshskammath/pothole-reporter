@@ -250,8 +250,8 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
       } catch (error) {
         console.error('💥 Error initializing map:', error);
         console.error('Error details:', {
-          message: error.message,
-          stack: error.stack,
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
           mapRef: !!mapRef.current,
           selectedCity,
           windowDefined: typeof window !== 'undefined'
