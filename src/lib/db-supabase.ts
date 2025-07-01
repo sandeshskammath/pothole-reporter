@@ -74,9 +74,9 @@ function normalizeStatus(status: string): 'reported' | 'in_progress' | 'fixed' {
       return 'in_progress';
     case 'fixed':
       return 'fixed';
-    case 'new':
+    case 'reported':
       return 'reported'; // Map old 'new' to 'reported'
-    case 'confirmed':
+    case 'in_progress':
       return 'in_progress'; // Map old 'confirmed' to 'in_progress'
     default:
       return 'reported';

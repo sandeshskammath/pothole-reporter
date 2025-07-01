@@ -9,7 +9,7 @@ const mockReports: PotholeReport[] = [
     longitude: -122.4194,
     photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkRlbW8gUG90aG9sZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk5OSI+U2FuIEZyYW5jaXNjbzwvdGV4dD48L3N2Zz4=',
     notes: 'Large pothole affecting traffic flow',
-    status: 'new' as const,
+    status: 'reported' as const,
     confirmations: 2,
     created_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
     updated_at: new Date(Date.now() - 86400000).toISOString(),
@@ -20,7 +20,7 @@ const mockReports: PotholeReport[] = [
     longitude: -122.4094,
     photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkRlbW8gUG90aG9sZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk5OSI+Tm9iIEhpbGw8L3RleHQ+PC9zdmc+',
     notes: 'Deep pothole near intersection',
-    status: 'confirmed' as const,
+    status: 'in_progress' as const,
     confirmations: 5,
     created_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
     updated_at: new Date(Date.now() - 86400000).toISOString(),
@@ -69,7 +69,7 @@ export async function initializeDatabase() {
         longitude DECIMAL(11, 8) NOT NULL,
         photo_url TEXT NOT NULL,
         notes TEXT,
-        status VARCHAR(20) DEFAULT 'new' CHECK (status IN ('new', 'confirmed', 'fixed')),
+        status VARCHAR(20) DEFAULT 'reported' CHECK (status IN ('reported', 'in_progress', 'fixed')),
         confirmations INTEGER DEFAULT 0,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -118,7 +118,7 @@ export async function createReport(data: CreateReportData): Promise<PotholeRepor
     longitude,
     photo_url,
     notes: notes || undefined,
-    status: 'new',
+    status: 'reported',
     confirmations: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -161,27 +161,27 @@ export async function getAllReports(): Promise<PotholeReport[]> {
 /**
  * Normalize status values between different formats
  */
-function normalizeStatus(status: string): 'new' | 'confirmed' | 'fixed' {
+function normalizeStatus(status: string): 'reported' | 'in_progress' | 'fixed' {
   switch (status) {
     case 'reported':
-      return 'new';
+      return 'reported';
     case 'in_progress':
-      return 'confirmed';
+      return 'in_progress';
     case 'fixed':
       return 'fixed';
-    case 'new':
-      return 'new';
-    case 'confirmed':
-      return 'confirmed';
+    case 'reported':
+      return 'reported';
+    case 'in_progress':
+      return 'in_progress';
     default:
-      return 'new';
+      return 'reported';
   }
 }
 
 /**
  * Get reports by status
  */
-export async function getReportsByStatus(status: 'new' | 'confirmed' | 'fixed'): Promise<PotholeReport[]> {
+export async function getReportsByStatus(status: 'reported' | 'in_progress' | 'fixed'): Promise<PotholeReport[]> {
   const result = await sql`
     SELECT * FROM pothole_reports 
     WHERE status = ${status}
@@ -261,7 +261,7 @@ export async function findNearbyReports(
  */
 export async function updateReportStatus(
   id: string,
-  status: 'new' | 'confirmed' | 'fixed'
+  status: 'reported' | 'in_progress' | 'fixed'
 ): Promise<PotholeReport> {
   const result = await sql`
     UPDATE pothole_reports 
@@ -316,8 +316,8 @@ export async function getReportStats() {
     const result = await sql`
       SELECT 
         COUNT(*) as total_reports,
-        COUNT(CASE WHEN status = 'new' THEN 1 END) as new_reports,
-        COUNT(CASE WHEN status = 'confirmed' THEN 1 END) as confirmed_reports,
+        COUNT(CASE WHEN status = 'reported' THEN 1 END) as new_reports,
+        COUNT(CASE WHEN status = 'in_progress' THEN 1 END) as confirmed_reports,
         COUNT(CASE WHEN status = 'fixed' THEN 1 END) as fixed_reports,
         COUNT(DISTINCT DATE(created_at)) as active_days
       FROM pothole_reports
@@ -328,8 +328,8 @@ export async function getReportStats() {
   // Development fallback
   return {
     total_reports: mockReports.length,
-    new_reports: mockReports.filter(r => r.status === 'new').length,
-    confirmed_reports: mockReports.filter(r => r.status === 'confirmed').length,
+    new_reports: mockReports.filter(r => r.status === 'reported').length,
+    confirmed_reports: mockReports.filter(r => r.status === 'in_progress').length,
     fixed_reports: mockReports.filter(r => r.status === 'fixed').length,
     active_days: 1
   };

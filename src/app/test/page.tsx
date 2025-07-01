@@ -246,7 +246,7 @@ CREATE TABLE pothole_reports (
   longitude DECIMAL(11, 8) NOT NULL,
   photo_url TEXT NOT NULL,
   notes TEXT,
-  status VARCHAR(20) DEFAULT 'new',
+  status VARCHAR(20) DEFAULT 'reported',
   confirmations INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -261,7 +261,7 @@ CREATE TABLE pothole_reports (
                   <li>Geospatial indexing for location queries</li>
                   <li>Automatic timestamp management</li>
                   <li>20-meter duplicate detection</li>
-                  <li>Status tracking (new → confirmed → fixed)</li>
+                  <li>Status tracking (reported → in_progress → fixed)</li>
                   <li>Community confirmation system</li>
                 </ul>
               </div>

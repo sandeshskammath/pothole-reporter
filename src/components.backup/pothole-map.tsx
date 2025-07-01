@@ -28,7 +28,7 @@ interface PotholeReport {
   photo_url: string;
   notes?: string;
   created_at: string;
-  status: 'new' | 'confirmed' | 'fixed';
+  status: 'reported' | 'in_progress' | 'fixed';
 }
 
 export function PotholeMap() {

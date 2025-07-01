@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS pothole_reports (
   longitude DECIMAL(11, 8) NOT NULL,
   photo_url TEXT NOT NULL,
   notes TEXT,
-  status VARCHAR(20) DEFAULT 'new' CHECK (status IN ('new', 'confirmed', 'fixed')),
+  status VARCHAR(20) DEFAULT 'reported' CHECK (status IN ('reported', 'in_progress', 'fixed')),
   confirmations INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

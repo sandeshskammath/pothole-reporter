@@ -6,8 +6,8 @@ export async function GET() {
     const reports = await getAllReports();
     
     // Calculate comprehensive stats using correct database status values
-    const newReports = reports.filter((r: any) => r.status === 'new');
-    const confirmedReports = reports.filter((r: any) => r.status === 'confirmed');
+    const newReports = reports.filter((r: any) => r.status === 'reported');
+    const confirmedReports = reports.filter((r: any) => r.status === 'in_progress');
     const fixedReports = reports.filter((r: any) => r.status === 'fixed');
     
     const stats = {

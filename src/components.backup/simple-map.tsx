@@ -9,7 +9,7 @@ interface PotholeReport {
   photo_url: string;
   notes?: string;
   created_at: string;
-  status: 'new' | 'confirmed' | 'fixed';
+  status: 'reported' | 'in_progress' | 'fixed';
 }
 
 interface SimpleMapProps {
@@ -248,8 +248,8 @@ export default function SimpleMap({ reports }: SimpleMapProps) {
                   font-size: 12px;
                   font-weight: 600;
                   text-transform: capitalize;
-                  ${report.status === 'new' ? 'background-color: #ffebee; color: #d32f2f;' :
-                    report.status === 'confirmed' ? 'background-color: #fff8e1; color: #f57c00;' :
+                  ${report.status === 'reported' ? 'background-color: #ffebee; color: #d32f2f;' :
+                    report.status === 'in_progress' ? 'background-color: #fff8e1; color: #f57c00;' :
                     'background-color: #e8f5e8; color: #2e7d32;'}
                 ">
                   ${report.status}
