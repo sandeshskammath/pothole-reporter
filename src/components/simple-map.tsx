@@ -28,21 +28,40 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
   const markerClusterRef = useRef<any>(null);
   const currentZoomRef = useRef<number>(10);
 
-  const updateVisualization = useCallback(async () => {
-    if (!mapInstanceRef.current || typeof window === 'undefined') return;
-
-    const L = window.L || (await import('leaflet')).default;
-    await import('leaflet.heat');
-    const zoom = currentZoomRef.current;
-
-    // Debug logging
-    console.log('updateVisualization called with:', { 
-      reportsCount: reports.length, 
-      zoom, 
-      reports: reports.slice(0, 3) 
+  // Debug props changes
+  useEffect(() => {
+    console.log('🗺️ SimpleMap received props:', { 
+      reportCount: reports.length, 
+      selectedCity,
+      sampleReport: reports[0],
+      mapInitialized: !!mapInstanceRef.current 
     });
+  }, [reports, selectedCity]);
 
-    // Clear existing layers
+  const updateVisualization = useCallback(async () => {
+    try {
+      if (!mapInstanceRef.current || typeof window === 'undefined') {
+        console.log('⚠️ updateVisualization skipped:', { 
+          mapExists: !!mapInstanceRef.current, 
+          windowDefined: typeof window !== 'undefined' 
+        });
+        return;
+      }
+
+      console.log('🔄 Starting updateVisualization...');
+      const L = window.L || (await import('leaflet')).default;
+      await import('leaflet.heat');
+      const zoom = currentZoomRef.current;
+
+      // Debug logging
+      console.log('📊 updateVisualization called with:', { 
+        reportsCount: reports.length, 
+        zoom, 
+        LdefinedOnWindow: !!window.L,
+        firstReport: reports[0]
+      });
+
+      // Clear existing layers
     if (heatmapLayerRef.current) {
       mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
       heatmapLayerRef.current = null;
@@ -158,9 +177,11 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
 
     const initMap = async () => {
       try {
+        console.log('🚀 Initializing map...');
         const L = (await import('leaflet')).default;
         await import('leaflet.heat');
         const MarkerClusterGroup = (await import('leaflet.markercluster')).default;
+        console.log('📦 Leaflet modules loaded successfully');
         
         // Fix for default markers
         delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -179,10 +200,12 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
         const map = L.map(mapRef.current!).setView(cityConfig.center, cityConfig.zoom);
         mapInstanceRef.current = map;
         currentZoomRef.current = cityConfig.zoom;
+        console.log('🗺️ Map instance created successfully', { center: cityConfig.center, zoom: cityConfig.zoom });
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors'
         }).addTo(map);
+        console.log('🎯 Map tiles added successfully');
 
         // Set city boundaries (temporarily disabled to show all data)
         // const bounds = L.latLngBounds(cityConfig.bounds);
@@ -220,8 +243,16 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
 
         // Store map reference globally
         (window as any).currentMap = map;
+        console.log('✅ Map initialization completed successfully');
       } catch (error) {
-        console.error('Error initializing map:', error);
+        console.error('💥 Error initializing map:', error);
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          mapRef: !!mapRef.current,
+          selectedCity,
+          windowDefined: typeof window !== 'undefined'
+        });
       }
     };
 

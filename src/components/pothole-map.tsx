@@ -44,31 +44,54 @@ export function PotholeMap() {
   const [selectedCity, setSelectedCity] = useState('chicago');
   const { toast } = useToast();
 
+  // Debug state changes
+  useEffect(() => {
+    console.log('📈 Reports state changed:', { 
+      reportCount: reports.length, 
+      loading, 
+      refreshing,
+      selectedCity,
+      sampleReport: reports[0] 
+    });
+  }, [reports, loading, refreshing, selectedCity]);
+
   const fetchReports = useCallback(async (showRefreshToast = false) => {
     try {
+      console.log('🔍 fetchReports called, showRefreshToast:', showRefreshToast);
       if (showRefreshToast) setRefreshing(true);
       
       const response = await fetch('/api/reports');
+      console.log('📡 API response status:', response.status, response.ok);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('📊 API data received:', { 
+          success: data.success, 
+          reportCount: data.reports?.length,
+          firstReport: data.reports?.[0] 
+        });
+        
         setReports(data.reports || []);
         
         if (showRefreshToast) {
           toast({
-            title: "Map updated",
+            title: "Map updated", 
             description: `Found ${data.reports?.length || 0} pothole reports`,
           });
         }
       } else {
-        throw new Error('Failed to fetch reports');
+        console.error('❌ API response not ok:', response.status, response.statusText);
+        throw new Error(`Failed to fetch reports: ${response.status}`);
       }
     } catch (error) {
+      console.error('💥 fetchReports error:', error);
       toast({
         title: "Error loading reports",
         description: "Unable to load pothole data. Please try again.",
         variant: "destructive",
       });
     } finally {
+      console.log('✅ fetchReports finished, setting loading false');
       setLoading(false);
       setRefreshing(false);
     }
@@ -146,7 +169,12 @@ export function PotholeMap() {
           </div>
         </div>
       ) : (
-        <Map reports={reports} selectedCity={selectedCity} />
+        <div>
+          <div className="text-xs text-white/60 mb-2">
+            Debug: Loading={loading.toString()}, Reports={reports.length}, City={selectedCity}
+          </div>
+          <Map reports={reports} selectedCity={selectedCity} />
+        </div>
       )}
       
       {/* Map Legend - Dark Glass Theme */}
