@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { getCityConfig, DEFAULT_CITY } from '@/lib/cities';
+import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
+import 'leaflet-defaulticon-compatibility';
 
 interface PotholeReport {
   id: string;
@@ -32,6 +34,13 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
     const L = window.L || (await import('leaflet')).default;
     await import('leaflet.heat');
     const zoom = currentZoomRef.current;
+
+    // Debug logging
+    console.log('updateVisualization called with:', { 
+      reportsCount: reports.length, 
+      zoom, 
+      reports: reports.slice(0, 3) 
+    });
 
     // Clear existing layers
     if (heatmapLayerRef.current) {
@@ -175,10 +184,10 @@ export default function SimpleMap({ reports, selectedCity = DEFAULT_CITY }: Simp
           attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Set city boundaries
-        const bounds = L.latLngBounds(cityConfig.bounds);
-        map.setMaxBounds(bounds);
-        map.setMinZoom(cityConfig.zoom - 2);
+        // Set city boundaries (temporarily disabled to show all data)
+        // const bounds = L.latLngBounds(cityConfig.bounds);
+        // map.setMaxBounds(bounds);
+        // map.setMinZoom(cityConfig.zoom - 2);
 
         // Initialize marker cluster group with custom styling
         markerClusterRef.current = new MarkerClusterGroup({
