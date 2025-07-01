@@ -1,40 +1,62 @@
 import { supabase } from './supabase';
 import { PotholeReport, CreateReportData } from './types';
 
-// Development mock data for fallback
+// Development mock data for fallback - using Chicago coordinates to match the focused cities
 const mockReports: PotholeReport[] = [
   {
     id: '1',
-    latitude: 37.7749,
-    longitude: -122.4194,
-    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkRlbW8gUG90aG9sZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk5OSI+U2FuIEZyYW5jaXNjbzwvdGV4dD48L3N2Zz4=',
-    notes: 'Large pothole affecting traffic flow',
-    status: 'new' as const,
-    confirmations: 2,
+    latitude: 41.8781,
+    longitude: -87.6298,
+    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkNoaWNhZ28gUG90aG9sZTwvdGV4dD48L3N2Zz4=',
+    notes: 'Large pothole on Michigan Avenue - high traffic area',
+    status: 'reported' as const,
+    confirmations: 3,
     created_at: new Date(Date.now() - 86400000).toISOString(),
     updated_at: new Date(Date.now() - 86400000).toISOString(),
   },
   {
     id: '2',
-    latitude: 37.7849,
-    longitude: -122.4094,
-    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkRlbW8gUG90aG9sZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk5OSI+Tm9iIEhpbGw8L3RleHQ+PC9zdmc+',
-    notes: 'Deep pothole near intersection',
-    status: 'confirmed' as const,
-    confirmations: 5,
+    latitude: 41.8676,
+    longitude: -87.6176,
+    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkluIFByb2dyZXNzPC90ZXh0Pjwvc3ZnPg==',
+    notes: 'Deep pothole near Grant Park - winter damage',
+    status: 'in_progress' as const,
+    confirmations: 7,
     created_at: new Date(Date.now() - 172800000).toISOString(),
     updated_at: new Date(Date.now() - 86400000).toISOString(),
   },
   {
     id: '3',
-    latitude: 37.7649,
-    longitude: -122.4294,
-    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU4Ii8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkZpeGVkIFBvdGhvbGU8L3RleHQ+PHRleHQgeD0iNTAlIiB5PSI2MCUiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM5OTkiPk1pc3Npb24gRGlzdDwvdGV4dD48L3N2Zz4=',
-    notes: 'Small pothole, minor issue',
+    latitude: 41.8947,
+    longitude: -87.6440,
+    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU4Ii8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkZpeGVkPC90ZXh0Pjwvc3ZnPg==',
+    notes: 'Fixed pothole on North Side - excellent repair work!',
     status: 'fixed' as const,
-    confirmations: 3,
+    confirmations: 4,
     created_at: new Date(Date.now() - 259200000).toISOString(),
     updated_at: new Date(Date.now() - 43200000).toISOString(),
+  },
+  {
+    id: '4',
+    latitude: 40.7589,
+    longitude: -73.9851,
+    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPk5ZQyBQb3Rob2xlPC90ZXh0Pjwvc3ZnPg==',
+    notes: 'Pothole in Times Square area - tourist safety concern',
+    status: 'reported' as const,
+    confirmations: 8,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: '5',
+    latitude: 40.6892,
+    longitude: -74.0445,
+    photo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPkluIFByb2dyZXNzPC90ZXh0Pjwvc3ZnPg==',
+    notes: 'Brooklyn Bridge area pothole - under repair',
+    status: 'in_progress' as const,
+    confirmations: 5,
+    created_at: new Date(Date.now() - 172800000).toISOString(),
+    updated_at: new Date(Date.now() - 86400000).toISOString(),
   }
 ];
 
@@ -44,20 +66,20 @@ function hasSupabase(): boolean {
 }
 
 // Normalize status values between different formats
-function normalizeStatus(status: string): 'new' | 'confirmed' | 'fixed' {
+function normalizeStatus(status: string): 'reported' | 'in_progress' | 'fixed' {
   switch (status) {
     case 'reported':
-      return 'new';
+      return 'reported';
     case 'in_progress':
-      return 'confirmed';
+      return 'in_progress';
     case 'fixed':
       return 'fixed';
     case 'new':
-      return 'new';
+      return 'reported'; // Map old 'new' to 'reported'
     case 'confirmed':
-      return 'confirmed';
+      return 'in_progress'; // Map old 'confirmed' to 'in_progress'
     default:
-      return 'new';
+      return 'reported';
   }
 }
 
@@ -116,7 +138,7 @@ export async function createReport(data: CreateReportData): Promise<PotholeRepor
     longitude,
     photo_url,
     notes: notes || undefined,
-    status: 'new',
+    status: 'reported',
     confirmations: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -205,11 +227,11 @@ export async function findNearbyReports(
  */
 export async function updateReportStatus(
   id: string,
-  status: 'new' | 'confirmed' | 'fixed'
+  status: 'reported' | 'in_progress' | 'fixed'
 ): Promise<PotholeReport> {
   if (hasSupabase()) {
-    // Convert status to Supabase format
-    const supabaseStatus = status === 'new' ? 'reported' : status === 'confirmed' ? 'in_progress' : 'fixed';
+    // Status is already in the correct format for Supabase
+    const supabaseStatus = status;
     
     const { data, error } = await supabase
       .from('pothole_reports')
@@ -286,8 +308,8 @@ export async function getReportStats() {
   // Development fallback
   return {
     total_reports: mockReports.length,
-    new_reports: mockReports.filter(r => r.status === 'new').length,
-    confirmed_reports: mockReports.filter(r => r.status === 'confirmed').length,
+    new_reports: mockReports.filter(r => r.status === 'reported').length,
+    confirmed_reports: mockReports.filter(r => r.status === 'in_progress').length,
     fixed_reports: mockReports.filter(r => r.status === 'fixed').length,
     active_days: 1
   };

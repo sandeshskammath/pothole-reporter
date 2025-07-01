@@ -6,7 +6,7 @@ export interface PotholeReport {
   longitude: number;
   photo_url: string;
   notes?: string;
-  status: 'new' | 'confirmed' | 'fixed';
+  status: 'reported' | 'in_progress' | 'fixed';
   confirmations: number;
   created_at: string;
   updated_at: string;
