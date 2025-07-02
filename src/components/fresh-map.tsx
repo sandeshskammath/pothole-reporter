@@ -124,18 +124,24 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
           const heatmapData = reports.map(report => [
             report.latitude,
             report.longitude,
-            1.0 // Basic intensity
+            Math.max(0.5, (report.confirmations || 1) * 0.3) // Higher intensity for confirmed reports
           ]);
+
+          console.log('🔥 Heatmap data sample:', heatmapData.slice(0, 3));
+          console.log('🔥 Heatmap data count:', heatmapData.length);
 
           if ((L as any).heatLayer && heatmapData.length > 0) {
             heatmapLayerRef.current = (L as any).heatLayer(heatmapData, {
-              radius: 20,
-              blur: 15,
+              radius: 35,        // Increased from 20 for larger heat spots
+              blur: 25,          // Increased from 15 for smoother blending
               maxZoom: 17,
+              minOpacity: 0.4,   // Minimum opacity to ensure visibility
               gradient: {
-                0.4: 'blue',
-                0.65: 'lime', 
-                1.0: 'red'
+                0.2: '#0066ff',  // Bright blue
+                0.4: '#00ff66',  // Bright green 
+                0.6: '#ffff00',  // Yellow
+                0.8: '#ff6600',  // Orange
+                1.0: '#ff0000'   // Bright red
               }
             });
             
