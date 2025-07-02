@@ -220,10 +220,15 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                 });
                 const coordinates = `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`;
                 
+                // Generate human-readable location from notes or coordinates
+                const humanLocation = report.notes && report.notes.length > 30 
+                  ? report.notes.split(' - ')[0] || report.notes.substring(0, 40) + '...'
+                  : selectedCity === 'chicago' ? 'Chicago Area' : 'NYC Area';
+                
                 marker.bindPopup(`
                   <div style="
                     width: 280px; 
-                    max-height: 320px; 
+                    max-height: 350px; 
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     background: rgba(255, 255, 255, 0.95);
                     backdrop-filter: blur(20px);
@@ -232,19 +237,30 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
                     border: 1px solid rgba(255, 255, 255, 0.2);
                   ">
-                    <!-- Header with location focus -->
+                    <!-- Header with human-readable location -->
                     <div style="
                       padding: 16px 20px 12px;
                       background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
                       border-bottom: 1px solid rgba(0, 0, 0, 0.05);
                     ">
                       <div style="
-                        font-size: 16px; 
+                        font-size: 17px; 
                         font-weight: 600; 
                         color: #1d1d1f; 
-                        margin-bottom: 2px;
+                        margin-bottom: 4px;
                         line-height: 1.3;
-                      ">📍 ${coordinates}</div>
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                      ">
+                        📍 ${humanLocation}
+                      </div>
+                      <div style="
+                        font-size: 11px; 
+                        color: #86868b; 
+                        margin-bottom: 6px;
+                        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                      ">${coordinates}</div>
                       <div style="
                         font-size: 13px; 
                         color: #86868b; 
@@ -290,7 +306,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                     ` : ''}
 
                     <!-- Content Section -->
-                    <div style="padding: 16px 20px 20px;">
+                    <div style="padding: 16px 20px 20px; max-height: 140px; overflow-y: auto;">
                       ${report.notes ? `
                         <div>
                           <div style="
@@ -302,14 +318,16 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                           <div style="
                             font-size: 14px; 
                             color: #424245; 
-                            line-height: 1.4;
+                            line-height: 1.5;
+                            word-wrap: break-word;
+                            overflow-wrap: break-word;
                           ">${report.notes}</div>
                         </div>
                       ` : ''}
                       
                       ${report.confirmations ? `
                         <div style="
-                          margin-top: ${report.notes ? '12px' : '0'};
+                          margin-top: ${report.notes ? '16px' : '0'};
                           padding-top: ${report.notes ? '12px' : '0'};
                           border-top: ${report.notes ? '1px solid rgba(0, 0, 0, 0.05)' : 'none'};
                           font-size: 12px;
@@ -373,10 +391,15 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
               });
               const coordinates = `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`;
               
+              // Generate human-readable location from notes or coordinates
+              const humanLocation = report.notes && report.notes.length > 30 
+                ? report.notes.split(' - ')[0] || report.notes.substring(0, 40) + '...'
+                : selectedCity === 'chicago' ? 'Chicago Area' : 'NYC Area';
+              
               marker.bindPopup(`
                 <div style="
                   width: 280px; 
-                  max-height: 320px; 
+                  max-height: 350px; 
                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                   background: rgba(255, 255, 255, 0.95);
                   backdrop-filter: blur(20px);
@@ -385,19 +408,30 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
                   border: 1px solid rgba(255, 255, 255, 0.2);
                 ">
-                  <!-- Header with location focus -->
+                  <!-- Header with human-readable location -->
                   <div style="
                     padding: 16px 20px 12px;
                     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
                     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
                   ">
                     <div style="
-                      font-size: 16px; 
+                      font-size: 17px; 
                       font-weight: 600; 
                       color: #1d1d1f; 
-                      margin-bottom: 2px;
+                      margin-bottom: 4px;
                       line-height: 1.3;
-                    ">📍 ${coordinates}</div>
+                      display: flex;
+                      align-items: center;
+                      gap: 6px;
+                    ">
+                      📍 ${humanLocation}
+                    </div>
+                    <div style="
+                      font-size: 11px; 
+                      color: #86868b; 
+                      margin-bottom: 6px;
+                      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                    ">${coordinates}</div>
                     <div style="
                       font-size: 13px; 
                       color: #86868b; 
@@ -443,7 +477,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                   ` : ''}
 
                   <!-- Content Section -->
-                  <div style="padding: 16px 20px 20px;">
+                  <div style="padding: 16px 20px 20px; max-height: 140px; overflow-y: auto;">
                     ${report.notes ? `
                       <div>
                         <div style="
@@ -455,14 +489,16 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                         <div style="
                           font-size: 14px; 
                           color: #424245; 
-                          line-height: 1.4;
+                          line-height: 1.5;
+                          word-wrap: break-word;
+                          overflow-wrap: break-word;
                         ">${report.notes}</div>
                       </div>
                     ` : ''}
                     
                     ${report.confirmations ? `
                       <div style="
-                        margin-top: ${report.notes ? '12px' : '0'};
+                        margin-top: ${report.notes ? '16px' : '0'};
                         padding-top: ${report.notes ? '12px' : '0'};
                         border-top: ${report.notes ? '1px solid rgba(0, 0, 0, 0.05)' : 'none'};
                         font-size: 12px;
