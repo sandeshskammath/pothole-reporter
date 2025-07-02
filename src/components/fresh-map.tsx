@@ -22,6 +22,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const heatmapLayerRef = useRef<any>(null);
+  const markerClusterRef = useRef<any>(null);
   const [mapReady, setMapReady] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(11);
 
@@ -31,9 +32,10 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
 
     const initMap = async () => {
       try {
-        // Import Leaflet and heatmap plugin
+        // Import Leaflet and plugins
         const L = (await import('leaflet')).default;
         await import('leaflet.heat');
+        await import('leaflet.markercluster');
         
         // Fix default markers
         delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -111,13 +113,17 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
           mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
           heatmapLayerRef.current = null;
         }
+        if (markerClusterRef.current) {
+          mapInstanceRef.current.removeLayer(markerClusterRef.current);
+          markerClusterRef.current = null;
+        }
         mapInstanceRef.current.eachLayer((layer: any) => {
           if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
             mapInstanceRef.current.removeLayer(layer);
           }
         });
 
-        if (currentZoom <= 10) {
+        if (currentZoom <= 8) {
           // Show heatmap for zoomed out view
           console.log('🔥 Creating heatmap for zoom level', currentZoom);
           
@@ -150,6 +156,80 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
           } else {
             console.log('❌ Heatmap not available, showing markers instead');
           }
+        } else if (currentZoom <= 12) {
+          // Show marker clusters for mid-zoom view
+          console.log('🎯 Creating marker clusters for zoom level', currentZoom);
+
+          if ((L as any).markerClusterGroup) {
+            markerClusterRef.current = (L as any).markerClusterGroup({
+              maxClusterRadius: 50,
+              disableClusteringAtZoom: 13,
+              iconCreateFunction: function(cluster: any) {
+                const count = cluster.getChildCount();
+                let className = 'marker-cluster-small';
+                let size = 30;
+                
+                if (count > 15) {
+                  className = 'marker-cluster-large';
+                  size = 50;
+                } else if (count > 8) {
+                  className = 'marker-cluster-medium';
+                  size = 40;
+                }
+                
+                return new L.DivIcon({
+                  html: `<div><span>${count}</span></div>`,
+                  className: `marker-cluster ${className}`,
+                  iconSize: new L.Point(size, size)
+                });
+              }
+            });
+
+            reports.forEach((report, index) => {
+              if (report.latitude && report.longitude) {
+                // Get color based on status
+                const getStatusColor = (status: string) => {
+                  switch (status) {
+                    case 'reported': return '#ef4444'; // Red
+                    case 'in_progress': return '#f97316'; // Orange
+                    case 'fixed': return '#22c55e'; // Green
+                    default: return '#6b7280'; // Gray fallback
+                  }
+                };
+
+                const marker = L.circleMarker([report.latitude, report.longitude], {
+                  radius: 6,
+                  fillColor: getStatusColor(report.status),
+                  color: '#ffffff',
+                  weight: 2,
+                  opacity: 1,
+                  fillOpacity: 0.8
+                });
+
+                // Enhanced popup with status color
+                const statusDisplay = report.status.replace('_', ' ').toUpperCase();
+                marker.bindPopup(`
+                  <div style="padding: 12px; min-width: 200px;">
+                    <strong>Report #${index + 1}</strong><br/>
+                    <span style="color: ${getStatusColor(report.status)}; font-weight: bold;">
+                      Status: ${statusDisplay}
+                    </span><br/>
+                    ${report.notes ? `<br/><strong>Notes:</strong> ${report.notes}<br/>` : ''}
+                    <br/><strong>Date:</strong> ${new Date(report.created_at).toLocaleDateString()}
+                    ${report.confirmations ? `<br/><strong>Confirmations:</strong> ${report.confirmations}` : ''}
+                  </div>
+                `);
+
+                markerClusterRef.current.addLayer(marker);
+              }
+            });
+
+            mapInstanceRef.current.addLayer(markerClusterRef.current);
+            console.log('✅ Marker clusters added successfully');
+          } else {
+            console.log('❌ MarkerClusterGroup not available');
+          }
+
         } else {
           // Show individual markers for zoomed in view
           console.log('📍 Creating individual markers for zoom level', currentZoom);
@@ -206,15 +286,49 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
   }, [mapReady, reports, currentZoom]);
 
   return (
-    <div 
-      ref={mapRef}
-      style={{
-        height: '400px',
-        width: '100%',
-        borderRadius: '12px',
-        overflow: 'hidden'
-      }}
-      className="border border-gray-300"
-    />
+    <>
+      <style jsx global>{`
+        .marker-cluster-small {
+          background-color: rgba(59, 130, 246, 0.6);
+          border: 2px solid rgba(59, 130, 246, 0.8);
+        }
+        .marker-cluster-medium {
+          background-color: rgba(249, 115, 22, 0.6);
+          border: 2px solid rgba(249, 115, 22, 0.8);
+        }
+        .marker-cluster-large {
+          background-color: rgba(239, 68, 68, 0.6);
+          border: 2px solid rgba(239, 68, 68, 0.8);
+        }
+        .marker-cluster {
+          border-radius: 50%;
+          text-align: center;
+          font-size: 12px;
+          font-weight: bold;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .marker-cluster div {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      `}</style>
+      <div 
+        ref={mapRef}
+        style={{
+          height: '400px',
+          width: '100%',
+          borderRadius: '12px',
+          overflow: 'hidden'
+        }}
+        className="border border-gray-300"
+      />
+    </>
   );
 }

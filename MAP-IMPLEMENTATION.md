@@ -16,11 +16,20 @@
 - [x] Test: Colors match status legend
 - [x] Enhanced popups with status information
 
-### Phase 3: Basic Heatmap ⏳
-- [ ] Add leaflet.heat plugin for city-level view
-- [ ] Create heatmap data from report coordinates
-- [ ] Test: Heatmap appears at zoomed-out view
-- [ ] Test: Heatmap shows density correctly
+### Phase 3: Basic Heatmap ✅
+- [x] Add leaflet.heat plugin for city-level view
+- [x] Create heatmap data from report coordinates
+- [x] Test: Heatmap appears at zoomed-out view
+- [x] Test: Heatmap shows density correctly
+- [x] Improved visibility with larger radius and brighter colors
+- [x] Dynamic intensity based on confirmation count
+- [x] Zoom-based switching (≤10: heatmap, >10: markers)
+
+### Phase 4: Marker Clustering ⏳
+- [ ] Add leaflet.markercluster for mid-zoom levels
+- [ ] Implement 3-tier system: heatmap → clusters → individual markers
+- [ ] Test: Smooth transitions between all three modes
+- [ ] Test: Cluster styling and interaction
 
 ### Phase 3: Marker Styling ✅
 - [ ] Add colored markers based on status
