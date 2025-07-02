@@ -220,10 +220,39 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                 });
                 const coordinates = `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`;
                 
-                // Generate human-readable location from notes or coordinates
-                const humanLocation = report.notes && report.notes.length > 30 
-                  ? report.notes.split(' - ')[0] || report.notes.substring(0, 40) + '...'
-                  : selectedCity === 'chicago' ? 'Chicago Area' : 'NYC Area';
+                // Generate human-readable location from coordinates or notes
+                const getLocationFromCoordinates = (lat, lng) => {
+                  // India
+                  if (lat >= 12.5 && lat <= 13.5 && lng >= 77.0 && lng <= 78.0) return 'Bangalore, India';
+                  if (lat >= 28.4 && lat <= 28.9 && lng >= 76.8 && lng <= 77.5) return 'New Delhi, India';
+                  if (lat >= 18.8 && lat <= 19.3 && lng >= 72.7 && lng <= 73.1) return 'Mumbai, India';
+                  
+                  // USA
+                  if (lat >= 41.5 && lat <= 42.2 && lng >= -88.0 && lng <= -87.0) return 'Chicago, IL';
+                  if (lat >= 40.4 && lat <= 41.0 && lng >= -74.5 && lng <= -73.5) return 'New York City, NY';
+                  if (lat >= 37.6 && lat <= 37.9 && lng >= -122.6 && lng <= -122.2) return 'San Francisco, CA';
+                  if (lat >= 33.9 && lat <= 34.3 && lng >= -118.7 && lng <= -118.0) return 'Los Angeles, CA';
+                  
+                  // UK
+                  if (lat >= 51.3 && lat <= 51.7 && lng >= -0.5 && lng <= 0.3) return 'London, UK';
+                  
+                  // Canada
+                  if (lat >= 43.5 && lat <= 43.9 && lng >= -79.7 && lng <= -79.1) return 'Toronto, Canada';
+                  
+                  // Default to coordinates if no match
+                  return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                };
+                
+                // Extract location from notes if it contains location info, otherwise use coordinates
+                let humanLocation;
+                if (report.notes && (report.notes.includes('Avenue') || report.notes.includes('Street') || report.notes.includes('Road') || report.notes.includes('Park'))) {
+                  // Extract location from notes if it seems to contain street/location info
+                  humanLocation = report.notes.split(' - ')[0] || report.notes.split('.')[0].substring(0, 50);
+                  if (humanLocation.length > 50) humanLocation = humanLocation.substring(0, 47) + '...';
+                } else {
+                  // Use coordinate-based location
+                  humanLocation = getLocationFromCoordinates(report.latitude, report.longitude);
+                }
                 
                 marker.bindPopup(`
                   <div style="
@@ -391,10 +420,39 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
               });
               const coordinates = `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`;
               
-              // Generate human-readable location from notes or coordinates
-              const humanLocation = report.notes && report.notes.length > 30 
-                ? report.notes.split(' - ')[0] || report.notes.substring(0, 40) + '...'
-                : selectedCity === 'chicago' ? 'Chicago Area' : 'NYC Area';
+              // Generate human-readable location from coordinates or notes
+              const getLocationFromCoordinates = (lat, lng) => {
+                // India
+                if (lat >= 12.5 && lat <= 13.5 && lng >= 77.0 && lng <= 78.0) return 'Bangalore, India';
+                if (lat >= 28.4 && lat <= 28.9 && lng >= 76.8 && lng <= 77.5) return 'New Delhi, India';
+                if (lat >= 18.8 && lat <= 19.3 && lng >= 72.7 && lng <= 73.1) return 'Mumbai, India';
+                
+                // USA
+                if (lat >= 41.5 && lat <= 42.2 && lng >= -88.0 && lng <= -87.0) return 'Chicago, IL';
+                if (lat >= 40.4 && lat <= 41.0 && lng >= -74.5 && lng <= -73.5) return 'New York City, NY';
+                if (lat >= 37.6 && lat <= 37.9 && lng >= -122.6 && lng <= -122.2) return 'San Francisco, CA';
+                if (lat >= 33.9 && lat <= 34.3 && lng >= -118.7 && lng <= -118.0) return 'Los Angeles, CA';
+                
+                // UK
+                if (lat >= 51.3 && lat <= 51.7 && lng >= -0.5 && lng <= 0.3) return 'London, UK';
+                
+                // Canada
+                if (lat >= 43.5 && lat <= 43.9 && lng >= -79.7 && lng <= -79.1) return 'Toronto, Canada';
+                
+                // Default to coordinates if no match
+                return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+              };
+              
+              // Extract location from notes if it contains location info, otherwise use coordinates
+              let humanLocation;
+              if (report.notes && (report.notes.includes('Avenue') || report.notes.includes('Street') || report.notes.includes('Road') || report.notes.includes('Park'))) {
+                // Extract location from notes if it seems to contain street/location info
+                humanLocation = report.notes.split(' - ')[0] || report.notes.split('.')[0].substring(0, 50);
+                if (humanLocation.length > 50) humanLocation = humanLocation.substring(0, 47) + '...';
+              } else {
+                // Use coordinate-based location
+                humanLocation = getLocationFromCoordinates(report.latitude, report.longitude);
+              }
               
               marker.bindPopup(`
                 <div style="
