@@ -210,32 +210,110 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                   fillOpacity: 0.8
                 });
 
-                // Enhanced popup with image and status color
+                // Modern Apple-like popup design
                 const statusDisplay = report.status.replace('_', ' ').toUpperCase();
+                const statusColor = getStatusColor(report.status);
+                
                 marker.bindPopup(`
-                  <div style="padding: 12px; min-width: 250px; max-width: 300px;">
-                    <strong>Report #${index + 1}</strong><br/>
-                    <span style="color: ${getStatusColor(report.status)}; font-weight: bold;">
-                      Status: ${statusDisplay}
-                    </span><br/>
+                  <div style="
+                    width: 280px; 
+                    max-height: 320px; 
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(20px);
+                    border-radius: 16px;
+                    overflow: hidden;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                  ">
+                    <!-- Header -->
+                    <div style="
+                      padding: 16px 20px 12px;
+                      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+                      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                    ">
+                      <div style="
+                        font-size: 18px; 
+                        font-weight: 600; 
+                        color: #1d1d1f; 
+                        margin-bottom: 4px;
+                      ">Report #${index + 1}</div>
+                      <div style="
+                        display: inline-flex;
+                        align-items: center;
+                        padding: 4px 12px;
+                        background: ${statusColor}15;
+                        border: 1px solid ${statusColor}30;
+                        border-radius: 20px;
+                        font-size: 12px;
+                        font-weight: 500;
+                        color: ${statusColor};
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                      ">
+                        <div style="
+                          width: 6px; 
+                          height: 6px; 
+                          background: ${statusColor}; 
+                          border-radius: 50%; 
+                          margin-right: 6px;
+                        "></div>
+                        ${statusDisplay}
+                      </div>
+                    </div>
+
+                    <!-- Image Section -->
                     ${report.photo_url ? `
-                      <div style="margin: 8px 0;">
+                      <div style="position: relative; height: 140px; overflow: hidden;">
                         <img src="${report.photo_url}" 
                              alt="Pothole photo" 
-                             style="width: 100%; max-width: 200px; height: auto; border-radius: 4px; border: 1px solid #ddd;"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <div style="display: none; padding: 8px; background: #f5f5f5; border-radius: 4px; text-align: center; color: #666; font-size: 12px;">
-                          Image not available
-                        </div>
+                             style="
+                               width: 100%; 
+                               height: 100%; 
+                               object-fit: cover;
+                               transition: transform 0.3s ease;
+                             "
+                             onerror="this.parentElement.innerHTML='<div style=\\'display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f7; color: #86868b; font-size: 14px;\\'>Image not available</div>';">
                       </div>
                     ` : ''}
-                    ${report.notes ? `<div style="margin: 8px 0;"><strong>Notes:</strong><br/>${report.notes}</div>` : ''}
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                      <strong>Date:</strong> ${new Date(report.created_at).toLocaleDateString()}
-                      ${report.confirmations ? `<br/><strong>Confirmations:</strong> ${report.confirmations}` : ''}
+
+                    <!-- Content Section -->
+                    <div style="padding: 16px 20px 20px;">
+                      ${report.notes ? `
+                        <div style="margin-bottom: 16px;">
+                          <div style="
+                            font-size: 14px; 
+                            font-weight: 600; 
+                            color: #1d1d1f; 
+                            margin-bottom: 6px;
+                          ">Notes</div>
+                          <div style="
+                            font-size: 14px; 
+                            color: #424245; 
+                            line-height: 1.4;
+                          ">${report.notes}</div>
+                        </div>
+                      ` : ''}
+                      
+                      <!-- Metadata -->
+                      <div style="
+                        display: flex; 
+                        justify-content: space-between; 
+                        padding-top: 12px; 
+                        border-top: 1px solid rgba(0, 0, 0, 0.05);
+                        font-size: 12px;
+                        color: #86868b;
+                      ">
+                        <span>${new Date(report.created_at).toLocaleDateString()}</span>
+                        ${report.confirmations ? `<span>${report.confirmations} confirmations</span>` : ''}
+                      </div>
                     </div>
                   </div>
-                `);
+                `, {
+                  maxWidth: 280,
+                  maxHeight: 320,
+                  className: 'modern-popup'
+                });
 
                 markerClusterRef.current.addLayer(marker);
               }
@@ -273,32 +351,110 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                 fillOpacity: 0.8
               });
 
-              // Enhanced popup with image and status color
+              // Modern Apple-like popup design
               const statusDisplay = report.status.replace('_', ' ').toUpperCase();
+              const statusColor = getStatusColor(report.status);
+              
               marker.bindPopup(`
-                <div style="padding: 12px; min-width: 250px; max-width: 300px;">
-                  <strong>Report #${index + 1}</strong><br/>
-                  <span style="color: ${getStatusColor(report.status)}; font-weight: bold;">
-                    Status: ${statusDisplay}
-                  </span><br/>
+                <div style="
+                  width: 280px; 
+                  max-height: 320px; 
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                  background: rgba(255, 255, 255, 0.95);
+                  backdrop-filter: blur(20px);
+                  border-radius: 16px;
+                  overflow: hidden;
+                  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                  border: 1px solid rgba(255, 255, 255, 0.2);
+                ">
+                  <!-- Header -->
+                  <div style="
+                    padding: 16px 20px 12px;
+                    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                  ">
+                    <div style="
+                      font-size: 18px; 
+                      font-weight: 600; 
+                      color: #1d1d1f; 
+                      margin-bottom: 4px;
+                    ">Report #${index + 1}</div>
+                    <div style="
+                      display: inline-flex;
+                      align-items: center;
+                      padding: 4px 12px;
+                      background: ${statusColor}15;
+                      border: 1px solid ${statusColor}30;
+                      border-radius: 20px;
+                      font-size: 12px;
+                      font-weight: 500;
+                      color: ${statusColor};
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                    ">
+                      <div style="
+                        width: 6px; 
+                        height: 6px; 
+                        background: ${statusColor}; 
+                        border-radius: 50%; 
+                        margin-right: 6px;
+                      "></div>
+                      ${statusDisplay}
+                    </div>
+                  </div>
+
+                  <!-- Image Section -->
                   ${report.photo_url ? `
-                    <div style="margin: 8px 0;">
+                    <div style="position: relative; height: 140px; overflow: hidden;">
                       <img src="${report.photo_url}" 
                            alt="Pothole photo" 
-                           style="width: 100%; max-width: 200px; height: auto; border-radius: 4px; border: 1px solid #ddd;"
-                           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                      <div style="display: none; padding: 8px; background: #f5f5f5; border-radius: 4px; text-align: center; color: #666; font-size: 12px;">
-                        Image not available
-                      </div>
+                           style="
+                             width: 100%; 
+                             height: 100%; 
+                             object-fit: cover;
+                             transition: transform 0.3s ease;
+                           "
+                           onerror="this.parentElement.innerHTML='<div style=\\'display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f7; color: #86868b; font-size: 14px;\\'>Image not available</div>';">
                     </div>
                   ` : ''}
-                  ${report.notes ? `<div style="margin: 8px 0;"><strong>Notes:</strong><br/>${report.notes}</div>` : ''}
-                  <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                    <strong>Date:</strong> ${new Date(report.created_at).toLocaleDateString()}
-                    ${report.confirmations ? `<br/><strong>Confirmations:</strong> ${report.confirmations}` : ''}
+
+                  <!-- Content Section -->
+                  <div style="padding: 16px 20px 20px;">
+                    ${report.notes ? `
+                      <div style="margin-bottom: 16px;">
+                        <div style="
+                          font-size: 14px; 
+                          font-weight: 600; 
+                          color: #1d1d1f; 
+                          margin-bottom: 6px;
+                        ">Notes</div>
+                        <div style="
+                          font-size: 14px; 
+                          color: #424245; 
+                          line-height: 1.4;
+                        ">${report.notes}</div>
+                      </div>
+                    ` : ''}
+                    
+                    <!-- Metadata -->
+                    <div style="
+                      display: flex; 
+                      justify-content: space-between; 
+                      padding-top: 12px; 
+                      border-top: 1px solid rgba(0, 0, 0, 0.05);
+                      font-size: 12px;
+                      color: #86868b;
+                    ">
+                      <span>${new Date(report.created_at).toLocaleDateString()}</span>
+                      ${report.confirmations ? `<span>${report.confirmations} confirmations</span>` : ''}
+                    </div>
                   </div>
                 </div>
-              `);
+              `, {
+                maxWidth: 280,
+                maxHeight: 320,
+                className: 'modern-popup'
+              });
 
               marker.addTo(mapInstanceRef.current);
             }
@@ -349,20 +505,54 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
           justify-content: center;
         }
         
-        /* Enhanced popup styling */
-        .leaflet-popup-content-wrapper {
-          border-radius: 8px;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        /* Modern popup styling */
+        .modern-popup .leaflet-popup-content-wrapper {
+          background: transparent;
+          border-radius: 16px;
+          box-shadow: none;
+          border: none;
+          padding: 0;
+          overflow: hidden;
         }
         
-        .leaflet-popup-content {
+        .modern-popup .leaflet-popup-content {
           margin: 0;
+          padding: 0;
           line-height: 1.4;
+          width: 280px !important;
+          max-height: 320px;
+          overflow: hidden;
         }
         
-        .leaflet-popup img {
-          max-width: 100%;
-          height: auto;
+        .modern-popup .leaflet-popup-tip {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modern-popup .leaflet-popup-close-button {
+          position: absolute;
+          top: 12px;
+          right: 16px;
+          width: 24px;
+          height: 24px;
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          color: #86868b;
+          text-decoration: none;
+          z-index: 10;
+          transition: all 0.2s ease;
+        }
+        
+        .modern-popup .leaflet-popup-close-button:hover {
+          background: rgba(0, 0, 0, 0.2);
+          color: #424245;
+          transform: scale(1.05);
         }
       `}</style>
       <div 
