@@ -10,10 +10,17 @@
 - [x] Test: Markers appear on map
 - [x] Test: Data flows from API to map
 
-### Phase 2: Status-Based Marker Colors ⏳  
-- [ ] Add colored markers based on status (red=reported, orange=in_progress, green=fixed)
-- [ ] Test: Markers show correct colors
-- [ ] Test: Colors match status legend
+### Phase 2: Status-Based Marker Colors ✅  
+- [x] Add colored markers based on status (red=reported, orange=in_progress, green=fixed)
+- [x] Test: Markers show correct colors
+- [x] Test: Colors match status legend
+- [x] Enhanced popups with status information
+
+### Phase 3: Basic Heatmap ⏳
+- [ ] Add leaflet.heat plugin for city-level view
+- [ ] Create heatmap data from report coordinates
+- [ ] Test: Heatmap appears at zoomed-out view
+- [ ] Test: Heatmap shows density correctly
 
 ### Phase 3: Marker Styling ✅
 - [ ] Add colored markers based on status
