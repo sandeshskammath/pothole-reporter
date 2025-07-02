@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
+import { getCityConfig } from '@/lib/cities';
 
 interface PotholeReport {
   id: string;
@@ -50,10 +51,13 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
           mapInstanceRef.current.remove();
         }
 
-        // Create map centered on Chicago
+        // Get city configuration
+        const cityConfig = getCityConfig(selectedCity);
+        
+        // Create map centered on selected city
         const map = L.map(mapRef.current!, {
-          center: [41.8781, -87.6298], // Chicago coordinates
-          zoom: 11,
+          center: cityConfig.center,
+          zoom: cityConfig.zoom,
           zoomControl: true
         });
 
@@ -63,7 +67,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
         }).addTo(map);
 
         mapInstanceRef.current = map;
-        setCurrentZoom(11);
+        setCurrentZoom(cityConfig.zoom);
         setMapReady(true);
 
         // Add zoom event listener
@@ -73,7 +77,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
           console.log('🔍 Zoom changed to:', zoom);
         });
 
-        console.log('✅ Fresh map initialized successfully');
+        console.log('✅ Fresh map initialized successfully for city:', selectedCity);
 
       } catch (error) {
         console.error('❌ Map initialization failed:', error);
@@ -89,7 +93,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
         setMapReady(false);
       }
     };
-  }, []);
+  }, [selectedCity]);
 
   // Update visualization based on zoom level
   useEffect(() => {
