@@ -210,9 +210,15 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                   fillOpacity: 0.8
                 });
 
-                // Modern Apple-like popup design
+                // Modern user-focused popup design
                 const statusDisplay = report.status.replace('_', ' ').toUpperCase();
                 const statusColor = getStatusColor(report.status);
+                const reportDate = new Date(report.created_at).toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric', 
+                  year: 'numeric' 
+                });
+                const coordinates = `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`;
                 
                 marker.bindPopup(`
                   <div style="
@@ -226,18 +232,24 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
                     border: 1px solid rgba(255, 255, 255, 0.2);
                   ">
-                    <!-- Header -->
+                    <!-- Header with location focus -->
                     <div style="
                       padding: 16px 20px 12px;
                       background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
                       border-bottom: 1px solid rgba(0, 0, 0, 0.05);
                     ">
                       <div style="
-                        font-size: 18px; 
+                        font-size: 16px; 
                         font-weight: 600; 
                         color: #1d1d1f; 
-                        margin-bottom: 4px;
-                      ">Report #${index + 1}</div>
+                        margin-bottom: 2px;
+                        line-height: 1.3;
+                      ">📍 ${coordinates}</div>
+                      <div style="
+                        font-size: 13px; 
+                        color: #86868b; 
+                        margin-bottom: 8px;
+                      ">Reported ${reportDate}</div>
                       <div style="
                         display: inline-flex;
                         align-items: center;
@@ -245,7 +257,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                         background: ${statusColor}15;
                         border: 1px solid ${statusColor}30;
                         border-radius: 20px;
-                        font-size: 12px;
+                        font-size: 11px;
                         font-weight: 500;
                         color: ${statusColor};
                         text-transform: uppercase;
@@ -280,7 +292,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                     <!-- Content Section -->
                     <div style="padding: 16px 20px 20px;">
                       ${report.notes ? `
-                        <div style="margin-bottom: 16px;">
+                        <div>
                           <div style="
                             font-size: 14px; 
                             font-weight: 600; 
@@ -295,18 +307,18 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                         </div>
                       ` : ''}
                       
-                      <!-- Metadata -->
-                      <div style="
-                        display: flex; 
-                        justify-content: space-between; 
-                        padding-top: 12px; 
-                        border-top: 1px solid rgba(0, 0, 0, 0.05);
-                        font-size: 12px;
-                        color: #86868b;
-                      ">
-                        <span>${new Date(report.created_at).toLocaleDateString()}</span>
-                        ${report.confirmations ? `<span>${report.confirmations} confirmations</span>` : ''}
-                      </div>
+                      ${report.confirmations ? `
+                        <div style="
+                          margin-top: ${report.notes ? '12px' : '0'};
+                          padding-top: ${report.notes ? '12px' : '0'};
+                          border-top: ${report.notes ? '1px solid rgba(0, 0, 0, 0.05)' : 'none'};
+                          font-size: 12px;
+                          color: #86868b;
+                          text-align: center;
+                        ">
+                          ${report.confirmations} community confirmations
+                        </div>
+                      ` : ''}
                     </div>
                   </div>
                 `, {
@@ -351,9 +363,15 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                 fillOpacity: 0.8
               });
 
-              // Modern Apple-like popup design
+              // Modern user-focused popup design
               const statusDisplay = report.status.replace('_', ' ').toUpperCase();
               const statusColor = getStatusColor(report.status);
+              const reportDate = new Date(report.created_at).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+              });
+              const coordinates = `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`;
               
               marker.bindPopup(`
                 <div style="
@@ -367,18 +385,24 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
                   border: 1px solid rgba(255, 255, 255, 0.2);
                 ">
-                  <!-- Header -->
+                  <!-- Header with location focus -->
                   <div style="
                     padding: 16px 20px 12px;
                     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
                     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
                   ">
                     <div style="
-                      font-size: 18px; 
+                      font-size: 16px; 
                       font-weight: 600; 
                       color: #1d1d1f; 
-                      margin-bottom: 4px;
-                    ">Report #${index + 1}</div>
+                      margin-bottom: 2px;
+                      line-height: 1.3;
+                    ">📍 ${coordinates}</div>
+                    <div style="
+                      font-size: 13px; 
+                      color: #86868b; 
+                      margin-bottom: 8px;
+                    ">Reported ${reportDate}</div>
                     <div style="
                       display: inline-flex;
                       align-items: center;
@@ -386,7 +410,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                       background: ${statusColor}15;
                       border: 1px solid ${statusColor}30;
                       border-radius: 20px;
-                      font-size: 12px;
+                      font-size: 11px;
                       font-weight: 500;
                       color: ${statusColor};
                       text-transform: uppercase;
@@ -421,7 +445,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                   <!-- Content Section -->
                   <div style="padding: 16px 20px 20px;">
                     ${report.notes ? `
-                      <div style="margin-bottom: 16px;">
+                      <div>
                         <div style="
                           font-size: 14px; 
                           font-weight: 600; 
@@ -436,18 +460,18 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                       </div>
                     ` : ''}
                     
-                    <!-- Metadata -->
-                    <div style="
-                      display: flex; 
-                      justify-content: space-between; 
-                      padding-top: 12px; 
-                      border-top: 1px solid rgba(0, 0, 0, 0.05);
-                      font-size: 12px;
-                      color: #86868b;
-                    ">
-                      <span>${new Date(report.created_at).toLocaleDateString()}</span>
-                      ${report.confirmations ? `<span>${report.confirmations} confirmations</span>` : ''}
-                    </div>
+                    ${report.confirmations ? `
+                      <div style="
+                        margin-top: ${report.notes ? '12px' : '0'};
+                        padding-top: ${report.notes ? '12px' : '0'};
+                        border-top: ${report.notes ? '1px solid rgba(0, 0, 0, 0.05)' : 'none'};
+                        font-size: 12px;
+                        color: #86868b;
+                        text-align: center;
+                      ">
+                        ${report.confirmations} community confirmations
+                      </div>
+                    ` : ''}
                   </div>
                 </div>
               `, {
