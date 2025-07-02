@@ -210,17 +210,30 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                   fillOpacity: 0.8
                 });
 
-                // Enhanced popup with status color
+                // Enhanced popup with image and status color
                 const statusDisplay = report.status.replace('_', ' ').toUpperCase();
                 marker.bindPopup(`
-                  <div style="padding: 12px; min-width: 200px;">
+                  <div style="padding: 12px; min-width: 250px; max-width: 300px;">
                     <strong>Report #${index + 1}</strong><br/>
                     <span style="color: ${getStatusColor(report.status)}; font-weight: bold;">
                       Status: ${statusDisplay}
                     </span><br/>
-                    ${report.notes ? `<br/><strong>Notes:</strong> ${report.notes}<br/>` : ''}
-                    <br/><strong>Date:</strong> ${new Date(report.created_at).toLocaleDateString()}
-                    ${report.confirmations ? `<br/><strong>Confirmations:</strong> ${report.confirmations}` : ''}
+                    ${report.photo_url ? `
+                      <div style="margin: 8px 0;">
+                        <img src="${report.photo_url}" 
+                             alt="Pothole photo" 
+                             style="width: 100%; max-width: 200px; height: auto; border-radius: 4px; border: 1px solid #ddd;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display: none; padding: 8px; background: #f5f5f5; border-radius: 4px; text-align: center; color: #666; font-size: 12px;">
+                          Image not available
+                        </div>
+                      </div>
+                    ` : ''}
+                    ${report.notes ? `<div style="margin: 8px 0;"><strong>Notes:</strong><br/>${report.notes}</div>` : ''}
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                      <strong>Date:</strong> ${new Date(report.created_at).toLocaleDateString()}
+                      ${report.confirmations ? `<br/><strong>Confirmations:</strong> ${report.confirmations}` : ''}
+                    </div>
                   </div>
                 `);
 
@@ -260,17 +273,30 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                 fillOpacity: 0.8
               });
 
-              // Enhanced popup with status color
+              // Enhanced popup with image and status color
               const statusDisplay = report.status.replace('_', ' ').toUpperCase();
               marker.bindPopup(`
-                <div style="padding: 12px; min-width: 200px;">
+                <div style="padding: 12px; min-width: 250px; max-width: 300px;">
                   <strong>Report #${index + 1}</strong><br/>
                   <span style="color: ${getStatusColor(report.status)}; font-weight: bold;">
                     Status: ${statusDisplay}
                   </span><br/>
-                  ${report.notes ? `<br/><strong>Notes:</strong> ${report.notes}<br/>` : ''}
-                  <br/><strong>Date:</strong> ${new Date(report.created_at).toLocaleDateString()}
-                  ${report.confirmations ? `<br/><strong>Confirmations:</strong> ${report.confirmations}` : ''}
+                  ${report.photo_url ? `
+                    <div style="margin: 8px 0;">
+                      <img src="${report.photo_url}" 
+                           alt="Pothole photo" 
+                           style="width: 100%; max-width: 200px; height: auto; border-radius: 4px; border: 1px solid #ddd;"
+                           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                      <div style="display: none; padding: 8px; background: #f5f5f5; border-radius: 4px; text-align: center; color: #666; font-size: 12px;">
+                        Image not available
+                      </div>
+                    </div>
+                  ` : ''}
+                  ${report.notes ? `<div style="margin: 8px 0;"><strong>Notes:</strong><br/>${report.notes}</div>` : ''}
+                  <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                    <strong>Date:</strong> ${new Date(report.created_at).toLocaleDateString()}
+                    ${report.confirmations ? `<br/><strong>Confirmations:</strong> ${report.confirmations}` : ''}
+                  </div>
                 </div>
               `);
 
@@ -321,6 +347,22 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
           display: flex;
           align-items: center;
           justify-content: center;
+        }
+        
+        /* Enhanced popup styling */
+        .leaflet-popup-content-wrapper {
+          border-radius: 8px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .leaflet-popup-content {
+          margin: 0;
+          line-height: 1.4;
+        }
+        
+        .leaflet-popup img {
+          max-width: 100%;
+          height: auto;
         }
       `}</style>
       <div 
