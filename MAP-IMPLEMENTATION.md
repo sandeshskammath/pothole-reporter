@@ -3,14 +3,17 @@
 ## Step-by-Step Map Development
 
 ### Phase 1: Basic Map Foundation ✅
-- [ ] Create minimal working Leaflet map
-- [ ] Test: Map displays with tiles
-- [ ] Test: Map loads without errors
+- [x] Create minimal working Leaflet map
+- [x] Test: Map displays with tiles
+- [x] Test: Map loads without errors
+- [x] Show simple red markers from API data
+- [x] Test: Markers appear on map
+- [x] Test: Data flows from API to map
 
-### Phase 2: Data Integration ✅  
-- [ ] Show simple markers from API data
-- [ ] Test: Markers appear on map
-- [ ] Test: Data flows from API to map
+### Phase 2: Status-Based Marker Colors ⏳  
+- [ ] Add colored markers based on status (red=reported, orange=in_progress, green=fixed)
+- [ ] Test: Markers show correct colors
+- [ ] Test: Colors match status legend
 
 ### Phase 3: Marker Styling ✅
 - [ ] Add colored markers based on status

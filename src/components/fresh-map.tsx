@@ -87,6 +87,13 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
         const L = (await import('leaflet')).default;
         
         console.log('📍 Adding', reports.length, 'markers to map');
+        
+        // Debug: Show status distribution
+        const statusCounts = reports.reduce((acc, report) => {
+          acc[report.status] = (acc[report.status] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+        console.log('📊 Status distribution:', statusCounts);
 
         // Clear existing markers
         mapInstanceRef.current.eachLayer((layer: any) => {
@@ -95,25 +102,39 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
           }
         });
 
-        // Add simple red circle markers
+        // Add colored circle markers based on status
         reports.forEach((report, index) => {
           if (report.latitude && report.longitude) {
+            // Get color based on status
+            const getStatusColor = (status: string) => {
+              switch (status) {
+                case 'reported': return '#ef4444'; // Red
+                case 'in_progress': return '#f97316'; // Orange
+                case 'fixed': return '#22c55e'; // Green
+                default: return '#6b7280'; // Gray fallback
+              }
+            };
+
             const marker = L.circleMarker([report.latitude, report.longitude], {
               radius: 8,
-              fillColor: '#ef4444',
+              fillColor: getStatusColor(report.status),
               color: '#ffffff',
               weight: 2,
               opacity: 1,
               fillOpacity: 0.8
             });
 
-            // Simple popup
+            // Enhanced popup with status color
+            const statusDisplay = report.status.replace('_', ' ').toUpperCase();
             marker.bindPopup(`
-              <div style="padding: 8px;">
+              <div style="padding: 12px; min-width: 200px;">
                 <strong>Report #${index + 1}</strong><br/>
-                Status: ${report.status}<br/>
-                ${report.notes ? `Notes: ${report.notes}<br/>` : ''}
-                Date: ${new Date(report.created_at).toLocaleDateString()}
+                <span style="color: ${getStatusColor(report.status)}; font-weight: bold;">
+                  Status: ${statusDisplay}
+                </span><br/>
+                ${report.notes ? `<br/><strong>Notes:</strong> ${report.notes}<br/>` : ''}
+                <br/><strong>Date:</strong> ${new Date(report.created_at).toLocaleDateString()}
+                ${report.confirmations ? `<br/><strong>Confirmations:</strong> ${report.confirmations}` : ''}
               </div>
             `);
 
