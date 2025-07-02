@@ -221,7 +221,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
                 const coordinates = `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`;
                 
                 // Generate human-readable location from coordinates or notes
-                const getLocationFromCoordinates = (lat, lng) => {
+                const getLocationFromCoordinates = (lat: number, lng: number) => {
                   // India
                   if (lat >= 12.5 && lat <= 13.5 && lng >= 77.0 && lng <= 78.0) return 'Bangalore, India';
                   if (lat >= 28.4 && lat <= 28.9 && lng >= 76.8 && lng <= 77.5) return 'New Delhi, India';
@@ -421,7 +421,7 @@ export default function FreshMap({ reports, selectedCity = 'chicago' }: FreshMap
               const coordinates = `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`;
               
               // Generate human-readable location from coordinates or notes
-              const getLocationFromCoordinates = (lat, lng) => {
+              const getLocationFromCoordinates = (lat: number, lng: number) => {
                 // India
                 if (lat >= 12.5 && lat <= 13.5 && lng >= 77.0 && lng <= 78.0) return 'Bangalore, India';
                 if (lat >= 28.4 && lat <= 28.9 && lng >= 76.8 && lng <= 77.5) return 'New Delhi, India';
