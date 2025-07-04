@@ -1,8 +1,9 @@
 'use client';
 
 import { PotholeMap } from '@/components/pothole-map';
+import Pothole3DViewer from '@/components/pothole-3d-viewer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, Filter, Users } from 'lucide-react';
+import { MapPin, Filter, Users, Box } from 'lucide-react';
 
 export default function MapPage() {
   return (
@@ -25,6 +26,26 @@ export default function MapPage() {
         {/* Map Component */}
         <div className="mb-8">
           <PotholeMap />
+        </div>
+
+        {/* 3D Viewer Section */}
+        <div className="mb-8">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Box className="h-4 w-4" />
+              3D Visualization
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Interactive 3D Models
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Explore detailed 3D representations of road conditions and infrastructure damage.
+            </p>
+          </div>
+          <Pothole3DViewer 
+            title="Road Surface Analysis"
+            description="Interactive 3D model showing pothole depth and road surface conditions"
+          />
         </div>
 
         {/* Map Features */}

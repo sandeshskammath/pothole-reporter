@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Camera, Menu, X, MapPin, Users, BarChart3, FileText } from 'lucide-react';
+import { Camera, Menu, X, MapPin, Users, BarChart3, FileText, Box } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Navigation() {
@@ -17,6 +17,12 @@ export function Navigation() {
       href: '/map',
       icon: MapPin,
       description: 'View reports and activity'
+    },
+    {
+      name: '3D View',
+      href: '/3d',
+      icon: Box,
+      description: 'Interactive 3D models'
     },
     {
       name: 'Civic Action',
